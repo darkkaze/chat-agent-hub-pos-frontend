@@ -17,7 +17,7 @@ Layout responsive con diseño 2/3 + 1/3 siguiendo las especificaciones.
     </div>
 
     <!-- Main POS Content -->
-    <div class="pos-content" :class="{ 'disabled': !hasCustomer }">
+    <div class="pos-content">
       <!-- Products Section (2/3) -->
       <div class="products-section">
         <v-card elevation="2" class="h-100 d-flex flex-column">
@@ -128,26 +128,6 @@ Layout responsive con diseño 2/3 + 1/3 siguiendo las especificaciones.
       </v-card>
     </v-dialog>
 
-    <!-- Disabled Overlay -->
-    <v-overlay
-      v-if="!hasCustomer"
-      :model-value="true"
-      class="pos-disabled-overlay"
-      scrim="rgba(0,0,0,0.1)"
-      persistent
-    >
-      <div class="text-center pa-8">
-        <v-icon size="80" color="on-surface-variant" class="mb-4">
-          mdi-account-search
-        </v-icon>
-        <h3 class="text-h6 text-on-surface-variant mb-2">
-          Selecciona un Cliente
-        </h3>
-        <p class="text-body-2 text-on-surface-variant">
-          Busca y selecciona un cliente para comenzar con la venta
-        </p>
-      </div>
-    </v-overlay>
   </div>
 </template>
 
@@ -255,20 +235,6 @@ const startNewSale = () => {
   overflow-y: auto;
 }
 
-/* Disabled state */
-.pos-content.disabled {
-  pointer-events: none;
-  opacity: 0.6;
-}
-
-.pos-disabled-overlay {
-  position: absolute !important;
-  z-index: 10;
-}
-
-.pos-disabled-overlay .v-overlay__content {
-  pointer-events: none;
-}
 
 /* Success dialog styling */
 .sale-details {
@@ -358,10 +324,6 @@ const startNewSale = () => {
   height: 100% !important;
 }
 
-/* Animation for disabled overlay */
-.pos-disabled-overlay {
-  transition: opacity 0.3s ease;
-}
 
 /* Monospace font for sale ID */
 .font-family-monospace {

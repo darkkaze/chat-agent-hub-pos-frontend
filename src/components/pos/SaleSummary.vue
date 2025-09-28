@@ -119,7 +119,30 @@ Emits: saleCompleted - Cuando se completa una venta exitosamente
 
       <!-- Action Button -->
       <div class="action-section">
+        <v-tooltip
+          v-if="!canProcessSale && !hasCustomer"
+          text="Selecciona un cliente para continuar"
+          location="top"
+        >
+          <template #activator="{ props }">
+            <v-btn
+              v-bind="props"
+              color="primary"
+              variant="flat"
+              size="large"
+              block
+              :disabled="!canProcessSale"
+              :loading="isProcessingSale"
+              @click="handleProcessSale"
+            >
+              <v-icon start size="large">mdi-cash-register</v-icon>
+              <span class="font-weight-bold text-h6">REGISTRAR VENTA</span>
+            </v-btn>
+          </template>
+        </v-tooltip>
+
         <v-btn
+          v-else
           color="primary"
           variant="flat"
           size="large"

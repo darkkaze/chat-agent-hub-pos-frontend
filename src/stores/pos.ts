@@ -10,6 +10,7 @@
 
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
+import { useCustomerStore } from './customer'
 import type {
   SaleItem,
   PaymentMethodItem,
@@ -36,6 +37,8 @@ interface PaymentItem {
 }
 
 export const usePOSStore = defineStore('pos', () => {
+  // Get customer store reference
+  const customerStore = useCustomerStore()
   // State
   const cartItems = ref<CartItem[]>([])
   const paymentMethods = ref<PaymentItem[]>([
@@ -81,7 +84,8 @@ export const usePOSStore = defineStore('pos', () => {
   })
 
   const canProcessSale = computed(() => {
-    return cartItems.value.length > 0 &&
+    return customerStore.hasCustomer &&
+           cartItems.value.length > 0 &&
            isPaymentValid.value &&
            !isProcessingSale.value
   })
