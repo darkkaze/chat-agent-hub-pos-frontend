@@ -50,8 +50,8 @@ const router = createRouter({
   ],
 })
 
-// Navigation guards with authentication
-router.beforeEach(async (to, from, next) => {
+// Navigation guards with simple authentication
+router.beforeEach((to, from, next) => {
   // Set page title
   if (to.meta?.title) {
     document.title = `${to.meta.title} - POS Agent Hub`
@@ -61,15 +61,10 @@ router.beforeEach(async (to, from, next) => {
 
   const authStore = useAuthStore()
 
-  // Initialize authentication on first navigation
-  if (!authStore.isInitialized) {
-    await authStore.initializeAuth()
-  }
-
-  // Check if user is authenticated
+  // Check if user has token in localStorage
   if (!authStore.isAuthenticated) {
-    // User is not authenticated, redirect to main system
-    console.log('POS access denied: User not authenticated. Redirecting to main system.')
+    // No token found, redirect to main system for authentication
+    console.log('POS access denied: No authentication token. Redirecting to main system.')
 
     // Get the domain from the current URL to redirect to the main system
     const currentHost = window.location.host
@@ -81,7 +76,8 @@ router.beforeEach(async (to, from, next) => {
     return
   }
 
-  // User is authenticated, continue navigation
+  // Token exists, continue navigation
+  // Backend will validate token in actual API calls
   next()
 })
 
