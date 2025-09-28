@@ -32,6 +32,7 @@ class ApiService {
     })
 
     this.setupInterceptors()
+    this.initializeToken()
   }
 
   private setupInterceptors() {
@@ -87,6 +88,11 @@ class ApiService {
       this.token = localStorage.getItem('auth_token')
     }
     return this.token
+  }
+
+  private initializeToken() {
+    // Cargar token existente del sistema principal al inicializar
+    this.token = localStorage.getItem('auth_token')
   }
 
   // HTTP Methods
