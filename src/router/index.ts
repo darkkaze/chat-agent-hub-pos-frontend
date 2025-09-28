@@ -13,10 +13,10 @@ const router = createRouter({
       children: [
         {
           path: '',
-          redirect: '/pos/sale'
+          redirect: '/sale'
         },
         {
-          path: 'pos/sale',
+          path: 'sale',
           name: 'pos-sale',
           component: POSPage,
           meta: {
@@ -44,7 +44,7 @@ const router = createRouter({
     // Redirect any unmatched routes to main POS
     {
       path: '/:pathMatch(.*)*',
-      redirect: '/pos/sale'
+      redirect: '/sale'
     }
   ],
 })
