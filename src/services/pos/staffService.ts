@@ -12,7 +12,7 @@
  * @author Agent Hub POS System
  */
 
-import { apiService } from '../api'
+import { apiService } from '@/services/api'
 import type {
   Staff,
   StaffListResponse,
