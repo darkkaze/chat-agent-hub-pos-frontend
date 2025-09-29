@@ -177,12 +177,11 @@ const startNewSale = () => {
 <style scoped>
 /* Main POS layout with 2/3 + 1/3 grid */
 .pos-page {
-  height: 100vh;
+  min-height: 100vh;
   background: rgb(var(--v-theme-background));
   padding: 16px;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
 }
 
 /* Customer search section */
@@ -197,17 +196,16 @@ const startNewSale = () => {
   grid-template-columns: 2fr 1fr;
   gap: 16px;
   flex-grow: 1;
-  min-height: 0;
 }
 
 /* Products section (2/3) */
 .products-section {
-  min-height: 0;
+  /* Allow natural height expansion */
 }
 
 /* Summary section (1/3) */
 .summary-section {
-  min-height: 0;
+  /* Allow natural height expansion */
 }
 
 

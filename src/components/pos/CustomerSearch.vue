@@ -11,9 +11,9 @@ Emits: ninguno
 
 <template>
   <v-card elevation="2" class="mb-4">
-    <v-card-title class="d-flex align-center pa-4 bg-surface-variant">
-      <v-icon class="me-3 text-primary">mdi-phone-search</v-icon>
-      <span class="text-on-surface font-weight-bold">Búsqueda Cliente</span>
+    <v-card-title class="d-flex align-center pa-2 bg-primary">
+      <v-icon class="me-2 text-white">mdi-phone-search</v-icon>
+      <span class="text-white font-weight-bold">Búsqueda Cliente</span>
     </v-card-title>
 
     <v-card-text class="pa-4">

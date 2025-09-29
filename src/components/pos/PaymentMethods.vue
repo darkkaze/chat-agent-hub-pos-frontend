@@ -10,9 +10,9 @@ Emits: ninguno
 
 <template>
   <v-card elevation="0" class="h-100 d-flex flex-column">
-    <v-card-title class="pa-3 bg-surface-variant">
-      <v-icon class="me-2 text-primary">mdi-credit-card</v-icon>
-      <span class="font-weight-bold">Métodos de Pago</span>
+    <v-card-title class="pa-2 bg-primary">
+      <v-icon class="me-2 text-white">mdi-credit-card</v-icon>
+      <span class="text-white font-weight-bold">Métodos de Pago</span>
     </v-card-title>
 
     <v-card-text class="pa-3 flex-grow-1">
