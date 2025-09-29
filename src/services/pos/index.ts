@@ -7,3 +7,4 @@
 export { customersService, CustomersService } from './customersService'
 export { productsService, ProductsService } from './productsService'
 export { salesService, SalesService } from './salesService'
+export { staffService } from './staffService'

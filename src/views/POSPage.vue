@@ -51,12 +51,12 @@ Layout responsive con diseño 2/3 + 1/3 siguiendo las especificaciones.
           <v-card-text class="pa-0 flex-grow-1 d-flex flex-column">
             <!-- Sale Summary -->
             <div class="sale-summary-section flex-grow-1">
-              <SaleSummary @sale-completed="handleSaleCompleted" />
+              <SaleSummary />
             </div>
 
             <!-- Payment Methods -->
             <div class="payment-methods-section">
-              <PaymentMethods />
+              <PaymentMethods @sale-completed="handleSaleCompleted" />
             </div>
           </v-card-text>
         </v-card>

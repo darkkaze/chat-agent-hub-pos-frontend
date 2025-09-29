@@ -89,40 +89,6 @@ Emits: ninguno
       </v-alert>
     </div>
 
-    <!-- Quick Add Buttons -->
-    <div class="quick-actions">
-      <v-btn
-        color="primary"
-        variant="outlined"
-        :disabled="!canAddProducts"
-        @click="showAddProductDialog"
-      >
-        <v-icon start>mdi-package-variant-plus</v-icon>
-        + Producto
-      </v-btn>
-
-      <v-btn
-        color="secondary"
-        variant="outlined"
-        :disabled="!canAddProducts"
-        class="ml-2"
-        @click="showAddServiceDialog"
-      >
-        <v-icon start>mdi-tools</v-icon>
-        + Servicio
-      </v-btn>
-
-      <v-btn
-        color="warning"
-        variant="outlined"
-        :disabled="!canAddProducts"
-        class="ml-2"
-        @click="showAddDiscountDialog"
-      >
-        <v-icon start>mdi-sale</v-icon>
-        + Descuento
-      </v-btn>
-    </div>
 
     <!-- Helper Text -->
     <div v-if="!canAddProducts" class="text-caption text-error mt-2">
@@ -200,20 +166,6 @@ const addProductToCart = (product: Product) => {
   hasSearched.value = false
 }
 
-const showAddProductDialog = () => {
-  // TODO: Implement product creation dialog
-  console.log('Show add product dialog')
-}
-
-const showAddServiceDialog = () => {
-  // TODO: Implement service creation dialog
-  console.log('Show add service dialog')
-}
-
-const showAddDiscountDialog = () => {
-  // TODO: Implement discount creation dialog
-  console.log('Show add discount dialog')
-}
 
 const showCreateProductDialog = () => {
   // TODO: Implement product creation from search
@@ -257,20 +209,4 @@ onUnmounted(() => {
   overflow-y: auto;
 }
 
-.quick-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-/* Responsive adjustments */
-@media (max-width: 599px) {
-  .quick-actions {
-    flex-direction: column;
-  }
-
-  .quick-actions .v-btn {
-    margin-left: 0 !important;
-  }
-}
 </style>

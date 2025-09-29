@@ -19,23 +19,11 @@ Emits: ninguno
       <div class="payment-methods">
         <!-- Cash Payment -->
         <div class="payment-method mb-3">
-          <v-checkbox
-            v-model="payments.cash.enabled"
-            :disabled="!canModifyPayments"
-            color="success"
-            density="compact"
-            hide-details
-          >
-            <template #label>
-              <div class="d-flex align-center w-100">
-                <v-icon class="me-2" color="success">mdi-cash</v-icon>
-                <span class="font-weight-medium">Efectivo</span>
-              </div>
-            </template>
-          </v-checkbox>
-
+          <div class="d-flex align-center mb-2">
+            <v-icon class="me-2" color="success" size="large">mdi-cash</v-icon>
+            <span class="font-weight-medium">Efectivo</span>
+          </div>
           <v-text-field
-            v-if="payments.cash.enabled"
             v-model="payments.cash.amount"
             type="number"
             step="0.01"
@@ -45,30 +33,17 @@ Emits: ninguno
             variant="outlined"
             density="compact"
             :disabled="!canModifyPayments"
-            class="mt-2"
             @update:model-value="updatePayment('cash', $event)"
           />
         </div>
 
         <!-- Card Payment -->
         <div class="payment-method mb-3">
-          <v-checkbox
-            v-model="payments.card.enabled"
-            :disabled="!canModifyPayments"
-            color="primary"
-            density="compact"
-            hide-details
-          >
-            <template #label>
-              <div class="d-flex align-center w-100">
-                <v-icon class="me-2" color="primary">mdi-credit-card</v-icon>
-                <span class="font-weight-medium">Tarjeta</span>
-              </div>
-            </template>
-          </v-checkbox>
-
+          <div class="d-flex align-center mb-2">
+            <v-icon class="me-2" color="primary" size="large">mdi-credit-card</v-icon>
+            <span class="font-weight-medium">Tarjeta</span>
+          </div>
           <v-text-field
-            v-if="payments.card.enabled"
             v-model="payments.card.amount"
             type="number"
             step="0.01"
@@ -78,30 +53,17 @@ Emits: ninguno
             variant="outlined"
             density="compact"
             :disabled="!canModifyPayments"
-            class="mt-2"
             @update:model-value="updatePayment('card', $event)"
           />
         </div>
 
         <!-- Transfer Payment -->
         <div class="payment-method mb-3">
-          <v-checkbox
-            v-model="payments.transfer.enabled"
-            :disabled="!canModifyPayments"
-            color="info"
-            density="compact"
-            hide-details
-          >
-            <template #label>
-              <div class="d-flex align-center w-100">
-                <v-icon class="me-2" color="info">mdi-bank-transfer</v-icon>
-                <span class="font-weight-medium">Transferencia</span>
-              </div>
-            </template>
-          </v-checkbox>
-
+          <div class="d-flex align-center mb-2">
+            <v-icon class="me-2" color="info" size="large">mdi-bank-transfer</v-icon>
+            <span class="font-weight-medium">Transferencia</span>
+          </div>
           <v-text-field
-            v-if="payments.transfer.enabled"
             v-model="payments.transfer.amount"
             type="number"
             step="0.01"
@@ -111,35 +73,22 @@ Emits: ninguno
             variant="outlined"
             density="compact"
             :disabled="!canModifyPayments"
-            class="mt-2"
             @update:model-value="updatePayment('transfer', $event)"
           />
         </div>
 
         <!-- Loyalty Points Payment -->
         <div class="payment-method mb-4">
-          <v-checkbox
-            v-model="payments.loyalty_points.enabled"
-            :disabled="!canModifyPayments || !hasLoyaltyPoints"
-            color="warning"
-            density="compact"
-            hide-details
-          >
-            <template #label>
-              <div class="d-flex align-center justify-space-between w-100">
-                <div class="d-flex align-center">
-                  <v-icon class="me-2" color="warning">mdi-wallet</v-icon>
-                  <span class="font-weight-medium">Monedero</span>
-                </div>
-                <span class="text-body-2 text-on-surface-variant">
-                  ${{ customerLoyaltyPoints.toFixed(2) }} Max
-                </span>
-              </div>
-            </template>
-          </v-checkbox>
-
+          <div class="d-flex align-center justify-space-between mb-2">
+            <div class="d-flex align-center">
+              <v-icon class="me-2" color="warning" size="large">mdi-wallet</v-icon>
+              <span class="font-weight-medium">Monedero</span>
+            </div>
+            <span class="text-body-2 text-on-surface-variant">
+              Máximo: ${{ customerLoyaltyPoints.toFixed(2) }}
+            </span>
+          </div>
           <v-text-field
-            v-if="payments.loyalty_points.enabled"
             v-model="payments.loyalty_points.amount"
             type="number"
             step="0.01"
@@ -149,12 +98,42 @@ Emits: ninguno
             prefix="$"
             variant="outlined"
             density="compact"
-            :disabled="!canModifyPayments"
+            :disabled="!canModifyPayments || !hasLoyaltyPoints"
             :error="isLoyaltyAmountInvalid"
             :error-messages="loyaltyErrorMessage"
-            class="mt-2"
             @update:model-value="updatePayment('loyalty_points', $event)"
           />
+        </div>
+
+        <!-- Staff Selection -->
+        <div class="staff-selection mb-4">
+          <div class="d-flex align-center mb-2">
+            <v-icon class="me-2" color="secondary" size="large">mdi-account-tie</v-icon>
+            <span class="font-weight-medium">Personal</span>
+          </div>
+          <v-select
+            v-model="staffStore.currentStaff"
+            :items="staffStore.activeStaff"
+            item-title="name"
+            item-value="id"
+            return-object
+            label="Seleccionar personal"
+            placeholder="Quien está atendiendo"
+            variant="outlined"
+            density="compact"
+            :disabled="!canModifyPayments"
+            :loading="staffStore.isLoading"
+            :error="!staffStore.hasCurrentStaff && hasAnyPayment"
+            :error-messages="!staffStore.hasCurrentStaff && hasAnyPayment ? 'Debe seleccionar el personal que atiende' : undefined"
+          >
+            <template #prepend-item>
+              <v-list-item v-if="staffStore.activeStaff.length === 0" disabled>
+                <v-list-item-title class="text-caption">
+                  No hay personal disponible
+                </v-list-item-title>
+              </v-list-item>
+            </template>
+          </v-select>
         </div>
       </div>
 
@@ -214,25 +193,49 @@ Emits: ninguno
       <div v-if="!canModifyPayments" class="text-caption text-error mt-2">
         ⚠️ Agrega productos al carrito para configurar pagos
       </div>
+
+      <!-- Register Sale Button -->
+      <div class="mt-4">
+        <v-btn
+          color="primary"
+          variant="flat"
+          size="large"
+          block
+          :disabled="!canProcessSale"
+          :loading="isProcessingSale"
+          @click="handleProcessSale"
+        >
+          <v-icon start size="large">mdi-cash-register</v-icon>
+          <span class="font-weight-bold">REGISTRAR VENTA</span>
+        </v-btn>
+      </div>
     </v-card-text>
   </v-card>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { PaymentMethod } from '@/types/pos'
 import { usePOSStore } from '@/stores/pos'
 import { useCustomerStore } from '@/stores/customer'
+import { useStaffStore } from '@/stores/staff'
+
+interface Emits {
+  (e: 'saleCompleted', sale: any): void
+}
+
+const emit = defineEmits<Emits>()
 
 const posStore = usePOSStore()
 const customerStore = useCustomerStore()
+const staffStore = useStaffStore()
 
-// Local payment state
+// Local payment state - simplified without enabled flags
 const payments = ref({
-  cash: { enabled: false, amount: '0.00' },
-  card: { enabled: false, amount: '0.00' },
-  transfer: { enabled: false, amount: '0.00' },
-  loyalty_points: { enabled: false, amount: '0.00' }
+  cash: { amount: '' },
+  card: { amount: '' },
+  transfer: { amount: '' },
+  loyalty_points: { amount: '' }
 })
 
 // Computed
@@ -247,10 +250,15 @@ const canModifyPayments = computed(() => {
          !posStore.isProcessingSale
 })
 
+const canProcessSale = computed(() =>
+  posStore.canProcessSale && staffStore.hasCurrentStaff
+)
+const isProcessingSale = computed(() => posStore.isProcessingSale)
+
 const hasLoyaltyPoints = computed(() => customerLoyaltyPoints.value > 0)
 
 const hasAnyPayment = computed(() => {
-  return Object.values(payments.value).some(p => p.enabled && parseFloat(p.amount) > 0)
+  return Object.values(payments.value).some(p => parseFloat(p.amount || '0') > 0)
 })
 
 const paymentDifference = computed(() => {
@@ -289,54 +297,79 @@ const updatePayment = (method: string, amount: string | number) => {
   const cleanAmount = parseFloat(numAmount) || 0
 
   // Update local state
-  payments.value[method as keyof typeof payments.value].amount = cleanAmount.toFixed(2)
+  payments.value[method as keyof typeof payments.value].amount = cleanAmount > 0 ? cleanAmount.toFixed(2) : ''
 
   // Validate loyalty points limit
   if (method === 'loyalty_points' && cleanAmount > customerLoyaltyPoints.value) {
     payments.value.loyalty_points.amount = customerLoyaltyPoints.value.toFixed(2)
   }
 
-  // Update store
+  // Update store - method is enabled if amount > 0
   const paymentMethod = method.toUpperCase() as PaymentMethod
   const finalAmount = payments.value[method as keyof typeof payments.value].amount
-  const enabled = payments.value[method as keyof typeof payments.value].enabled
+  const isEnabled = parseFloat(finalAmount || '0') > 0
 
-  posStore.updatePaymentMethod(paymentMethod, finalAmount, enabled && parseFloat(finalAmount) > 0)
+  posStore.updatePaymentMethod(paymentMethod, finalAmount, isEnabled)
 }
 
-// Watch for payment enabled/disabled changes
+// Watch for payment amount changes
 watch(() => payments.value, (newPayments) => {
   Object.entries(newPayments).forEach(([method, payment]) => {
     const paymentMethod = method.toUpperCase() as PaymentMethod
+    const isEnabled = parseFloat(payment.amount || '0') > 0
     posStore.updatePaymentMethod(
       paymentMethod,
       payment.amount,
-      payment.enabled && parseFloat(payment.amount) > 0
+      isEnabled
     )
   })
 }, { deep: true })
 
-// Auto-fill remaining amount when only one payment method is enabled
+// Auto-fill remaining amount when only one payment method has value
 const autoFillAmount = () => {
-  const enabledMethods = Object.entries(payments.value).filter(([_, p]) => p.enabled)
+  const methodsWithValue = Object.entries(payments.value).filter(([_, p]) => parseFloat(p.amount || '0') > 0)
 
-  if (enabledMethods.length === 1) {
-    const [method, payment] = enabledMethods[0]
+  if (methodsWithValue.length === 1) {
+    const [method, payment] = methodsWithValue[0]
     const total = parseFloat(totalAmount.value)
+    const currentAmount = parseFloat(payment.amount || '0')
 
-    if (method === 'loyalty_points') {
-      const maxAmount = Math.min(total, customerLoyaltyPoints.value)
-      payment.amount = maxAmount.toFixed(2)
-    } else {
-      payment.amount = total.toFixed(2)
+    // Only auto-fill if current amount is less than total
+    if (currentAmount < total) {
+      if (method === 'loyalty_points') {
+        const maxAmount = Math.min(total, customerLoyaltyPoints.value)
+        payment.amount = maxAmount.toFixed(2)
+      } else {
+        payment.amount = total.toFixed(2)
+      }
+
+      updatePayment(method, payment.amount)
     }
-
-    updatePayment(method, payment.amount)
   }
 }
 
-// Watch for enabled method changes to auto-fill
-watch(() => Object.values(payments.value).map(p => p.enabled), autoFillAmount)
+// Watch for payment amount changes to auto-fill
+watch(() => Object.values(payments.value).map(p => p.amount), autoFillAmount)
+
+// Sale processing method
+const handleProcessSale = async () => {
+  if (!canProcessSale.value || !customerStore.currentCustomer || !staffStore.currentStaff) {
+    return
+  }
+
+  try {
+    const sale = await posStore.processSale(customerStore.currentCustomer.id, staffStore.currentStaff.id)
+    await customerStore.refreshCurrentCustomer()
+    emit('saleCompleted', sale)
+  } catch (error) {
+    console.error('Error processing sale:', error)
+  }
+}
+
+// Load staff on component mount
+onMounted(async () => {
+  await staffStore.loadStaff()
+})
 </script>
 
 <style scoped>
@@ -355,26 +388,20 @@ watch(() => Object.values(payments.value).map(p => p.enabled), autoFillAmount)
   background: rgba(var(--v-theme-surface-variant), 0.3);
 }
 
-/* Ensure checkboxes align properly */
-.v-checkbox :deep(.v-selection-control__wrapper) {
-  height: auto;
+/* Payment method spacing */
+.payment-method .d-flex.align-center {
+  padding: 4px 0;
 }
 
-/* Custom width for amount inputs */
+/* Full width for amount inputs */
 .v-text-field {
-  max-width: 150px;
-  margin-left: 32px; /* Align with checkbox label */
+  width: 100%;
 }
 
 /* Responsive adjustments */
 @media (max-width: 599px) {
   .payment-method {
     margin-bottom: 16px;
-  }
-
-  .v-text-field {
-    max-width: none;
-    margin-left: 0;
   }
 
   .d-flex.justify-space-between {

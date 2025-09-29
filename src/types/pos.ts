@@ -22,6 +22,28 @@ export enum SaleItemType {
   SERVICE = 'service'
 }
 
+// Staff Types
+export interface Staff extends BaseEntity {
+  name: string
+  schedule: string // JSON string for schedule/shifts
+  is_active: boolean
+}
+
+export interface StaffListResponse {
+  staff: Staff[]
+}
+
+export interface CreateStaffRequest {
+  name: string
+  schedule?: string
+}
+
+export interface UpdateStaffRequest {
+  name?: string
+  schedule?: string
+  is_active?: boolean
+}
+
 // Customer Types
 export interface Customer extends BaseEntity {
   phone: string
@@ -91,6 +113,7 @@ export interface PaymentMethodItem {
 // Sale Types
 export interface Sale extends BaseEntity {
   customer_id: string
+  staff_id: string
   items: SaleItem[]
   subtotal: string // Decimal as string
   discount_amount?: string // Decimal as string
@@ -98,10 +121,12 @@ export interface Sale extends BaseEntity {
   loyalty_points_generated?: number
   payment_methods: PaymentMethodItem[]
   customer: Customer
+  staff: Staff
 }
 
 export interface CreateSaleRequest {
   customer_id: string
+  staff_id: string
   items: SaleItem[]
   subtotal: string
   discount_amount?: string

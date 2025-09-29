@@ -132,7 +132,7 @@ export const usePOSStore = defineStore('pos', () => {
     discountAmount.value = '0.00'
   }
 
-  const processSale = async (customerId: string) => {
+  const processSale = async (customerId: string, staffId: string) => {
     if (!canProcessSale.value) {
       throw new Error('Cannot process sale - invalid state')
     }
@@ -162,6 +162,7 @@ export const usePOSStore = defineStore('pos', () => {
       // Create sale via API
       const sale = await salesService.createSale({
         customer_id: customerId,
+        staff_id: staffId,
         items: saleItems,
         subtotal: subtotal.value,
         discount_amount: discountAmount.value,
