@@ -1,58 +1,67 @@
 <!--
-POSPage - Vista Principal del POS Simplificada
+POSPage - Vista Principal del POS
 
-Interface simple con 3 secciones:
+Vista principal del sistema POS que combina todos los componentes:
 - Búsqueda de clientes
-- Carrito de compras
-- Resumen y pago
+- Gestión de productos y carrito
+- Métodos de pago y resumen de venta
+
+Layout responsive con diseño 2/3 + 1/3 siguiendo las especificaciones.
 -->
 
 <template>
   <div class="pos-page">
     <!-- Customer Search Section -->
-    <section class="customer-section">
+    <div class="customer-section">
       <CustomerSearch />
-    </section>
+    </div>
 
-    <!-- Cart Section -->
-    <section class="cart-section">
-      <v-card elevation="1" class="mb-4">
-        <v-card-title class="d-flex align-center pa-3 bg-primary">
-          <v-icon class="me-2 text-white">mdi-cart</v-icon>
-          <span class="text-white font-weight-bold">Carrito</span>
-        </v-card-title>
+    <!-- Main POS Content -->
+    <div class="pos-content">
+      <!-- Products Section (2/3) -->
+      <div class="products-section">
+        <v-card elevation="2" class="h-100 d-flex flex-column">
+          <v-card-title class="d-flex align-center pa-2 bg-primary">
+            <v-icon class="me-2 text-white">mdi-package-variant</v-icon>
+            <span class="text-white font-weight-bold">Productos</span>
+          </v-card-title>
 
-        <v-card-text class="pa-3">
-          <!-- Product Search -->
-          <div class="mb-4">
-            <ProductSearch />
-          </div>
+          <v-card-text class="pa-3 flex-grow-1 overflow-auto">
+            <!-- Product Search -->
+            <div class="product-search-section mb-4">
+              <ProductSearch />
+            </div>
 
-          <!-- Cart Items -->
-          <div>
-            <SaleCart />
-          </div>
-        </v-card-text>
-      </v-card>
-    </section>
+            <!-- Cart Display -->
+            <div class="cart-section">
+              <SaleCart />
+            </div>
+          </v-card-text>
+        </v-card>
+      </div>
 
-    <!-- Summary Section -->
-    <section class="summary-section">
-      <v-card elevation="1">
-        <v-card-title class="d-flex align-center pa-3 bg-success">
-          <v-icon class="me-2 text-white">mdi-calculator</v-icon>
-          <span class="text-white font-weight-bold">Resumen de Venta</span>
-        </v-card-title>
+      <!-- Summary Section (1/3) -->
+      <div class="summary-section">
+        <v-card elevation="2" class="h-100 d-flex flex-column">
+          <v-card-title class="d-flex align-center pa-2 bg-primary">
+            <v-icon class="me-2 text-white">mdi-calculator</v-icon>
+            <span class="text-white font-weight-bold">Resumen Venta</span>
+          </v-card-title>
 
-        <v-card-text class="pa-0">
-          <!-- Sale Summary -->
-          <SaleSummary @sale-completed="handleSaleCompleted" />
+          <v-card-text class="pa-0 flex-grow-1 d-flex flex-column">
+            <!-- Sale Summary -->
+            <div class="sale-summary-section flex-grow-1">
+              <SaleSummary @sale-completed="handleSaleCompleted" />
+            </div>
 
-          <!-- Payment Methods -->
-          <PaymentMethods />
-        </v-card-text>
-      </v-card>
-    </section>
+            <!-- Payment Methods -->
+            <div class="payment-methods-section">
+              <PaymentMethods />
+            </div>
+          </v-card-text>
+        </v-card>
+      </div>
+    </div>
 
     <!-- Success Dialog -->
     <v-dialog
@@ -166,27 +175,39 @@ const startNewSale = () => {
 </script>
 
 <style scoped>
-/* Main POS layout - Simple scrollable */
+/* Main POS layout with 2/3 + 1/3 grid */
 .pos-page {
-  min-height: 100vh;
+  height: 100vh;
   background: rgb(var(--v-theme-background));
   padding: 16px;
-  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 /* Customer search section */
 .customer-section {
+  flex-shrink: 0;
   margin-bottom: 16px;
 }
 
-/* Cart section */
-.cart-section {
-  margin-bottom: 16px;
+/* Main content area with 2/3 + 1/3 grid */
+.pos-content {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 16px;
+  flex-grow: 1;
+  min-height: 0;
 }
 
-/* Summary section */
+/* Products section (2/3) */
+.products-section {
+  min-height: 0;
+}
+
+/* Summary section (1/3) */
 .summary-section {
-  margin-bottom: 16px;
+  min-height: 0;
 }
 
 
