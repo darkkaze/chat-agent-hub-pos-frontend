@@ -12,53 +12,48 @@
  * @author Agent Hub POS System
  */
 
-import { apiClient } from '../api'
+import { apiService } from '../api'
 import type {
   Staff,
   StaffListResponse,
   CreateStaffRequest,
   UpdateStaffRequest
 } from '@/types/pos'
-import type { ApiResponse } from '@/types/api'
+import type { ApiMessageResponse } from '@/types/api'
 
 export const staffService = {
   /**
    * Obtener todo el personal activo
    */
   async getStaff(): Promise<StaffListResponse> {
-    const response = await apiClient.get<StaffListResponse>('/staff')
-    return response.data
+    return await apiService.get<StaffListResponse>('/staff')
   },
 
   /**
    * Crear un nuevo miembro del personal
    */
   async createStaff(staffData: CreateStaffRequest): Promise<Staff> {
-    const response = await apiClient.post<Staff>('/staff', staffData)
-    return response.data
+    return await apiService.post<Staff>('/staff', staffData)
   },
 
   /**
    * Obtener información de un miembro del personal específico
    */
   async getStaffById(staffId: string): Promise<Staff> {
-    const response = await apiClient.get<Staff>(`/staff/${staffId}`)
-    return response.data
+    return await apiService.get<Staff>(`/staff/${staffId}`)
   },
 
   /**
    * Actualizar un miembro del personal existente
    */
   async updateStaff(staffId: string, staffData: UpdateStaffRequest): Promise<Staff> {
-    const response = await apiClient.put<Staff>(`/staff/${staffId}`, staffData)
-    return response.data
+    return await apiService.put<Staff>(`/staff/${staffId}`, staffData)
   },
 
   /**
    * Desactivar miembro del personal (soft delete)
    */
-  async deleteStaff(staffId: string): Promise<ApiResponse> {
-    const response = await apiClient.delete<ApiResponse>(`/staff/${staffId}`)
-    return response.data
+  async deleteStaff(staffId: string): Promise<ApiMessageResponse> {
+    return await apiService.delete<ApiMessageResponse>(`/staff/${staffId}`)
   }
 }
