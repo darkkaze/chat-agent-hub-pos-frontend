@@ -148,10 +148,9 @@ watch(currentTab, (newTab) => {
 </script>
 
 <style scoped>
-/* Main content container - fill viewport height */
+/* Main content container - allow natural scroll */
 .main-content {
-  height: 100vh;
-  overflow: hidden;
+  min-height: 100vh;
 }
 
 /* Ensure full height for tab content */

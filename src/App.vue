@@ -32,12 +32,10 @@ body {
   padding: 0;
   font-family: 'Roboto', sans-serif;
   background: rgb(var(--v-theme-background));
-  overflow: hidden;
 }
 
 #app {
-  height: 100vh;
-  overflow: hidden;
+  min-height: 100vh;
 }
 
 /* Ensure consistent box-sizing */
