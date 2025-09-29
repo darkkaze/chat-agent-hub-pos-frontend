@@ -61,20 +61,7 @@ Emits: ninguno
         <v-window v-model="currentTab" class="h-100">
           <!-- Products Tab -->
           <v-window-item value="products" class="h-100">
-            <router-view v-if="currentTab === 'products'" name="products" />
-            <div v-else class="d-flex align-center justify-center h-100">
-              <div class="text-center">
-                <v-icon size="120" color="on-surface-variant" class="mb-4">
-                  mdi-package-variant
-                </v-icon>
-                <h2 class="text-h5 text-on-surface-variant mb-2">
-                  Gestión de Productos
-                </h2>
-                <p class="text-body-1 text-on-surface-variant">
-                  Cargando...
-                </p>
-              </div>
-            </div>
+            <router-view />
           </v-window-item>
 
           <!-- Tickets Tab -->
@@ -134,14 +121,14 @@ const showGlobalLoading = computed(() => posStore.isProcessingSale)
 
 // Watch for route changes to update tab
 watch(
-  () => route.name,
-  (newRouteName) => {
-    // Update tab based on route if needed
-    if (newRouteName === 'pos-sale') {
+  () => route.path,
+  (newPath) => {
+    // Update tab based on route path
+    if (newPath === '/pos/sale') {
       currentTab.value = 'sale'
-    } else if (newRouteName === 'products-admin') {
+    } else if (newPath === '/pos/productos') {
       currentTab.value = 'products'
-    } else if (newRouteName === 'sales-history') {
+    } else if (newPath === '/pos/tickets') {
       currentTab.value = 'tickets'
     }
   },
@@ -150,12 +137,12 @@ watch(
 
 // Watch for tab changes to update route
 watch(currentTab, (newTab) => {
-  if (newTab === 'sale' && route.name !== 'pos-sale') {
-    router.push({ name: 'pos-sale' })
-  } else if (newTab === 'products' && route.name !== 'products-admin') {
-    router.push({ name: 'products-admin' })
-  } else if (newTab === 'tickets' && route.name !== 'sales-history') {
-    router.push({ name: 'sales-history' })
+  if (newTab === 'sale' && route.path !== '/pos/sale') {
+    router.push('/pos/sale')
+  } else if (newTab === 'products' && route.path !== '/pos/productos') {
+    router.push('/pos/productos')
+  } else if (newTab === 'tickets' && route.path !== '/pos/tickets') {
+    router.push('/pos/tickets')
   }
 })
 </script>
