@@ -26,7 +26,7 @@ export const staffService = {
    * Obtener todo el personal activo
    */
   async getStaff(): Promise<StaffListResponse> {
-    return await apiService.get<StaffListResponse>('/staff')
+    return await apiService.get<StaffListResponse>('/staff/')
   },
 
   /**
