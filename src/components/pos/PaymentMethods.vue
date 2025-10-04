@@ -261,7 +261,9 @@ const updatePayment = (method: string, amount: string | number) => {
   const finalAmount = payments.value[method as keyof typeof payments.value].amount
   const isEnabled = parseFloat(finalAmount || '0') > 0
 
+  console.log('Updating payment:', { paymentMethod, finalAmount, isEnabled })
   posStore.updatePaymentMethod(paymentMethod, finalAmount, isEnabled)
+  console.log('Total payment after update:', posStore.totalPaymentAmount)
 }
 
 // No auto-fill logic - user controls all inputs manually
