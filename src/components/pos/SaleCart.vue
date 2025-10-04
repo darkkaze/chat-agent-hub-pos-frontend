@@ -50,21 +50,7 @@ Carrito con diseño de tabla:
 
             <!-- Unit Price -->
             <td class="text-center">
-              <v-text-field
-                v-if="item.variable_price"
-                :model-value="item.unit_price"
-                @update:model-value="(val) => updatePrice(item, val)"
-                type="number"
-                step="0.01"
-                min="0"
-                variant="outlined"
-                density="compact"
-                hide-details
-                prefix="$"
-                :disabled="!canModifyCart"
-                class="unit-price-field"
-              />
-              <span v-else class="font-weight-medium">${{ parseFloat(item.unit_price).toFixed(2) }}</span>
+              <span class="font-weight-medium">${{ parseFloat(item.unit_price).toFixed(2) }}</span>
             </td>
 
             <!-- Quantity Controls -->
@@ -97,6 +83,7 @@ Carrito con diseño de tabla:
             <!-- Additional Amount -->
             <td class="text-center">
               <v-text-field
+                v-if="item.variable_price"
                 v-model="item.additional"
                 variant="outlined"
                 density="compact"
@@ -106,6 +93,7 @@ Carrito con diseño de tabla:
                 class="additional-field"
                 @update:model-value="updateAdditional(item)"
               />
+              <span v-else class="text-medium-emphasis">-</span>
             </td>
 
             <!-- Total -->
@@ -157,12 +145,6 @@ const decreaseQuantity = (item: any) => {
 
 const removeItem = (item: any) => {
   posStore.removeItem(item.id)
-}
-
-const updatePrice = (item: any, newPrice: string) => {
-  if (newPrice && !isNaN(parseFloat(newPrice))) {
-    posStore.updateItemPrice(item.id, newPrice)
-  }
 }
 
 const updateAdditional = (item: any) => {
