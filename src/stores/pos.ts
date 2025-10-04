@@ -172,17 +172,22 @@ export const usePOSStore = defineStore('pos', () => {
 
     try {
       // Convert cart items to API format
-      const saleItems: SaleItem[] = cartItems.value.map(item => ({
-        type: item.type,
-        product_id: item.product_id,
-        name: item.name,
-        description: item.description,
-        details: item.details,
-        unit_price: item.unit_price,
-        quantity: item.quantity,
-        total: item.total,
-        variable_price: item.variable_price
-      }))
+      const saleItems: SaleItem[] = cartItems.value.map(item => {
+        // Calculate item total: (unit_price * quantity) + additional
+        const baseTotal = parseFloat(item.unit_price) * item.quantity
+        const additional = parseFloat(item.additional || '0')
+        const itemTotal = (baseTotal + additional).toFixed(2)
+
+        return {
+          type: item.type,
+          product_id: item.product_id,
+          name: item.name,
+          description: item.description || item.details || '', // Backend requires description
+          unit_price: item.unit_price,
+          quantity: item.quantity,
+          total: itemTotal
+        }
+      })
 
       // Convert payment methods to API format
       const salePaymentMethods: PaymentMethodItem[] = paymentMethods.value
@@ -192,8 +197,8 @@ export const usePOSStore = defineStore('pos', () => {
           amount: pm.amount
         }))
 
-      // Create sale via API
-      const sale = await salesService.createSale({
+      // Prepare sale request payload
+      const salePayload = {
         customer_id: customerId,
         staff_id: staffId,
         items: saleItems,
@@ -202,7 +207,12 @@ export const usePOSStore = defineStore('pos', () => {
         total_amount: totalAmount.value,
         loyalty_points_generated: loyaltyPointsGenerated.value,
         payment_methods: salePaymentMethods
-      })
+      }
+
+      console.log('Creating sale with payload:', JSON.stringify(salePayload, null, 2))
+
+      // Create sale via API
+      const sale = await salesService.createSale(salePayload)
 
       // Clear cart after successful sale
       clearCart()
