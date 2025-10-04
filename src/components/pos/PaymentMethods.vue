@@ -15,21 +15,20 @@ Emits: ninguno
       <span class="text-white font-weight-bold">Métodos de Pago</span>
     </v-card-title>
 
-    <v-card-text class="pa-3 flex-grow-1">
+    <v-card-text class="pa-3 flex-grow-1 overflow-y-auto">
       <div class="payment-methods">
         <!-- Cash Payment -->
-        <div class="payment-method mb-2">
-          <div class="d-flex align-center gap-3">
-            <div class="d-flex align-center payment-label">
-              <v-icon class="me-2" color="success" size="large">mdi-cash</v-icon>
-              <span class="font-weight-medium">Efectivo</span>
-            </div>
+        <div class="payment-method mb-1">
+          <div class="d-flex align-center gap-2">
+            <v-icon color="success">mdi-cash</v-icon>
+            <span class="payment-label">Efectivo</span>
             <v-text-field
               v-model="payments.cash.amount"
               placeholder="0.00"
               prefix="$"
-              variant="outlined"
+              variant="plain"
               density="compact"
+              hide-details
               class="payment-input"
               :disabled="!canModifyPayments"
               @update:model-value="updatePayment('cash', $event)"
@@ -38,18 +37,17 @@ Emits: ninguno
         </div>
 
         <!-- Card Payment -->
-        <div class="payment-method mb-2">
-          <div class="d-flex align-center gap-3">
-            <div class="d-flex align-center payment-label">
-              <v-icon class="me-2" color="primary" size="large">mdi-credit-card</v-icon>
-              <span class="font-weight-medium">Tarjeta</span>
-            </div>
+        <div class="payment-method mb-1">
+          <div class="d-flex align-center gap-2">
+            <v-icon color="primary">mdi-credit-card</v-icon>
+            <span class="payment-label">Tarjeta</span>
             <v-text-field
               v-model="payments.card.amount"
               placeholder="0.00"
               prefix="$"
-              variant="outlined"
+              variant="plain"
               density="compact"
+              hide-details
               class="payment-input"
               :disabled="!canModifyPayments"
               @update:model-value="updatePayment('card', $event)"
@@ -58,18 +56,17 @@ Emits: ninguno
         </div>
 
         <!-- Transfer Payment -->
-        <div class="payment-method mb-2">
-          <div class="d-flex align-center gap-3">
-            <div class="d-flex align-center payment-label">
-              <v-icon class="me-2" color="info" size="large">mdi-bank-transfer</v-icon>
-              <span class="font-weight-medium">Transferencia</span>
-            </div>
+        <div class="payment-method mb-1">
+          <div class="d-flex align-center gap-2">
+            <v-icon color="info">mdi-bank-transfer</v-icon>
+            <span class="payment-label">Transferencia</span>
             <v-text-field
               v-model="payments.transfer.amount"
               placeholder="0.00"
               prefix="$"
-              variant="outlined"
+              variant="plain"
               density="compact"
+              hide-details
               class="payment-input"
               :disabled="!canModifyPayments"
               @update:model-value="updatePayment('transfer', $event)"
@@ -78,40 +75,37 @@ Emits: ninguno
         </div>
 
         <!-- Loyalty Points Payment -->
-        <div class="payment-method mb-3">
-          <div class="d-flex align-center gap-3">
-            <div class="d-flex align-center payment-label">
-              <v-icon class="me-2" color="warning" size="large">mdi-wallet</v-icon>
-              <span class="font-weight-medium">Monedero</span>
-            </div>
-            <div class="flex-grow-1">
-              <v-text-field
-                v-model="payments.loyalty_points.amount"
-                placeholder="0.00"
-                prefix="$"
-                variant="outlined"
-                density="compact"
-                class="payment-input"
-                :disabled="!canModifyPayments || !hasLoyaltyPoints"
-                :error="isLoyaltyAmountInvalid"
-                :error-messages="loyaltyErrorMessage"
-                @update:model-value="updatePayment('loyalty_points', $event)"
-              >
-                <template #append-inner>
-                  <span class="text-caption text-on-surface-variant">
-                    Máx: ${{ customerLoyaltyPoints.toFixed(2) }}
-                  </span>
-                </template>
-              </v-text-field>
-            </div>
+        <div class="payment-method mb-2">
+          <div class="d-flex align-center gap-2">
+            <v-icon color="warning">mdi-wallet</v-icon>
+            <span class="payment-label">Monedero</span>
+            <v-text-field
+              v-model="payments.loyalty_points.amount"
+              placeholder="0.00"
+              prefix="$"
+              variant="plain"
+              density="compact"
+              :hide-details="!isLoyaltyAmountInvalid"
+              class="payment-input"
+              :disabled="!canModifyPayments || !hasLoyaltyPoints"
+              :error="isLoyaltyAmountInvalid"
+              :error-messages="loyaltyErrorMessage"
+              @update:model-value="updatePayment('loyalty_points', $event)"
+            >
+              <template #append-inner>
+                <span class="text-caption text-on-surface-variant">
+                  Máx: ${{ customerLoyaltyPoints.toFixed(2) }}
+                </span>
+              </template>
+            </v-text-field>
           </div>
         </div>
 
         <!-- Staff Selection -->
-        <div class="staff-selection mb-4">
-          <div class="d-flex align-center mb-2">
-            <v-icon class="me-2" color="secondary" size="large">mdi-account-tie</v-icon>
-            <span class="font-weight-medium">Personal</span>
+        <div class="staff-selection mb-3">
+          <div class="d-flex align-center gap-2 mb-1">
+            <v-icon color="secondary">mdi-account-tie</v-icon>
+            <span class="payment-label">Personal</span>
           </div>
           <v-select
             v-model="staffStore.currentStaff"
@@ -123,6 +117,7 @@ Emits: ninguno
             placeholder="Quien está atendiendo"
             variant="outlined"
             density="compact"
+            hide-details
             :disabled="!canModifyPayments"
             :loading="staffStore.isLoading"
           >
@@ -316,25 +311,15 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.payment-method {
-  border: 1px solid rgba(var(--v-theme-on-surface), 0.12);
-  border-radius: 8px;
-  padding: 12px;
-  transition: border-color 0.2s ease;
-}
-
-.payment-method:hover {
-  border-color: rgba(var(--v-theme-primary), 0.3);
-}
-
 .payment-summary {
   background: rgba(var(--v-theme-surface-variant), 0.3);
 }
 
 /* Payment method label width */
 .payment-label {
-  min-width: 120px;
+  min-width: 100px;
   flex-shrink: 0;
+  font-size: 0.875rem;
 }
 
 /* Payment input styling */
@@ -342,25 +327,15 @@ onMounted(async () => {
   flex: 1;
 }
 
-/* Compact spacing for horizontal layout */
-.payment-method {
-  padding: 8px 12px;
-}
-
-/* Gap between label and input */
-.gap-3 {
-  gap: 12px;
+/* Gap utilities */
+.gap-2 {
+  gap: 8px;
 }
 
 /* Responsive adjustments */
 @media (max-width: 599px) {
-  .payment-method {
-    margin-bottom: 16px;
-  }
-
-  .d-flex.justify-space-between {
-    flex-direction: column;
-    gap: 4px;
+  .payment-label {
+    min-width: 80px;
   }
 }
 </style>
