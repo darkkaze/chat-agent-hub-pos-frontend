@@ -245,7 +245,9 @@ const loyaltyErrorMessage = computed(() => {
 
 // Methods
 const updatePayment = (method: string, amount: string | number) => {
-  const strAmount = typeof amount === 'string' ? amount : amount.toString()
+  // Convert to string and clean any currency symbols and spaces
+  let strAmount = typeof amount === 'string' ? amount : amount.toString()
+  strAmount = strAmount.replace(/[$\s]/g, '').trim()
 
   // Keep the value as-is while typing (don't format)
   payments.value[method as keyof typeof payments.value].amount = strAmount
@@ -259,11 +261,23 @@ const updatePayment = (method: string, amount: string | number) => {
   // Update store - method is enabled if amount > 0
   const paymentMethod = method.toUpperCase() as PaymentMethod
   const finalAmount = payments.value[method as keyof typeof payments.value].amount
-  const isEnabled = parseFloat(finalAmount || '0') > 0
+  const numericAmount = parseFloat(finalAmount || '0')
+  const isEnabled = numericAmount > 0
 
-  console.log('Updating payment:', { paymentMethod, finalAmount, isEnabled })
+  console.log('Updating payment:', {
+    method,
+    rawAmount: amount,
+    cleanedAmount: strAmount,
+    paymentMethod,
+    finalAmount,
+    numericAmount,
+    isEnabled
+  })
   posStore.updatePaymentMethod(paymentMethod, finalAmount, isEnabled)
-  console.log('Total payment after update:', posStore.totalPaymentAmount)
+  console.log('Store state after update:', {
+    paymentMethods: posStore.paymentMethods,
+    totalPaymentAmount: posStore.totalPaymentAmount
+  })
 }
 
 // No auto-fill logic - user controls all inputs manually
