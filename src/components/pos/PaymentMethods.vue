@@ -18,7 +18,7 @@ Emits: ninguno
     <v-card-text class="pa-3 flex-grow-1 overflow-y-auto">
       <div class="payment-methods">
         <!-- Cash Payment -->
-        <div class="payment-method mb-1">
+        <div class="payment-method mb-2">
           <div class="d-flex align-center gap-2">
             <v-icon color="success">mdi-cash</v-icon>
             <span class="payment-label">Efectivo</span>
@@ -26,10 +26,9 @@ Emits: ninguno
               v-model="payments.cash.amount"
               placeholder="0.00"
               prefix="$"
-              variant="solo"
+              variant="outlined"
               density="compact"
               hide-details
-              flat
               class="payment-input"
               :disabled="!canModifyPayments"
               @update:model-value="updatePayment('cash', $event)"
@@ -38,7 +37,7 @@ Emits: ninguno
         </div>
 
         <!-- Card Payment -->
-        <div class="payment-method mb-1">
+        <div class="payment-method mb-2">
           <div class="d-flex align-center gap-2">
             <v-icon color="primary">mdi-credit-card</v-icon>
             <span class="payment-label">Tarjeta</span>
@@ -46,10 +45,9 @@ Emits: ninguno
               v-model="payments.card.amount"
               placeholder="0.00"
               prefix="$"
-              variant="solo"
+              variant="outlined"
               density="compact"
               hide-details
-              flat
               class="payment-input"
               :disabled="!canModifyPayments"
               @update:model-value="updatePayment('card', $event)"
@@ -58,7 +56,7 @@ Emits: ninguno
         </div>
 
         <!-- Transfer Payment -->
-        <div class="payment-method mb-1">
+        <div class="payment-method mb-2">
           <div class="d-flex align-center gap-2">
             <v-icon color="info">mdi-bank-transfer</v-icon>
             <span class="payment-label">Transferencia</span>
@@ -66,10 +64,9 @@ Emits: ninguno
               v-model="payments.transfer.amount"
               placeholder="0.00"
               prefix="$"
-              variant="solo"
+              variant="outlined"
               density="compact"
               hide-details
-              flat
               class="payment-input"
               :disabled="!canModifyPayments"
               @update:model-value="updatePayment('transfer', $event)"
@@ -78,7 +75,7 @@ Emits: ninguno
         </div>
 
         <!-- Loyalty Points Payment -->
-        <div class="payment-method mb-2">
+        <div class="payment-method mb-3">
           <div class="d-flex align-center gap-2">
             <v-icon color="warning">mdi-wallet</v-icon>
             <span class="payment-label">Monedero</span>
@@ -86,10 +83,9 @@ Emits: ninguno
               v-model="payments.loyalty_points.amount"
               placeholder="0.00"
               prefix="$"
-              variant="solo"
+              variant="outlined"
               density="compact"
               :hide-details="!isLoyaltyAmountInvalid"
-              flat
               class="payment-input"
               :disabled="!canModifyPayments || !hasLoyaltyPoints"
               :error="isLoyaltyAmountInvalid"
