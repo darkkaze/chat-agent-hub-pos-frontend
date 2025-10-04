@@ -59,6 +59,21 @@ Emits:
             no-resize
           />
 
+          <!-- Product Details -->
+          <v-textarea
+            v-model="formData.details"
+            label="Detalles (opcional)"
+            placeholder="Ej: + gel GRATIS, SIN DISEÑOS"
+            prepend-inner-icon="mdi-note-text"
+            variant="outlined"
+            density="compact"
+            class="mb-4"
+            rows="2"
+            counter="200"
+            maxlength="200"
+            no-resize
+          />
+
           <!-- Product Price -->
           <v-text-field
             v-model="formData.price"
@@ -74,6 +89,42 @@ Emits:
             min="0"
             class="mb-4"
             required
+          />
+
+          <!-- Variable Price -->
+          <v-switch
+            v-model="formData.variable_price"
+            color="warning"
+            label="Precio variable"
+            messages="Si está activo, el precio podrá editarse en el carrito"
+            persistent-hint
+            class="mb-4"
+          />
+
+          <!-- Category -->
+          <v-text-field
+            v-model="formData.category"
+            label="Categoría (opcional)"
+            placeholder="Ej: Servicios de Uñas, Depilaciones"
+            prepend-inner-icon="mdi-tag"
+            variant="outlined"
+            density="compact"
+            class="mb-4"
+            counter="50"
+            maxlength="50"
+          />
+
+          <!-- Duration -->
+          <v-text-field
+            v-model="formData.duration_minutes"
+            label="Duración en minutos (opcional)"
+            placeholder="Ej: 30, 60, 120"
+            prepend-inner-icon="mdi-clock-outline"
+            variant="outlined"
+            density="compact"
+            type="number"
+            min="0"
+            class="mb-4"
           />
 
           <!-- Active Status -->
@@ -149,10 +200,14 @@ const form = ref<any>(null)
 const isCreating = ref(false)
 
 // Form data
-const formData = ref<CreateProductRequest & { is_active: boolean }>({
+const formData = ref<CreateProductRequest & { is_active: boolean; duration_minutes?: number }>({
   name: '',
   description: '',
+  details: '',
   price: '0.00',
+  variable_price: false,
+  category: '',
+  duration_minutes: undefined,
   is_active: true
 })
 
@@ -203,10 +258,20 @@ const handleSubmit = async () => {
   priceErrors.value = []
 
   try {
+    // Build metadata object
+    const metadata: any = {}
+    if (formData.value.duration_minutes) {
+      metadata.duration_minutes = formData.value.duration_minutes
+    }
+
     const productData: CreateProductRequest = {
       name: formData.value.name.trim(),
       description: formData.value.description?.trim() || undefined,
-      price: parseFloat(formData.value.price).toFixed(2)
+      details: formData.value.details?.trim() || undefined,
+      price: parseFloat(formData.value.price).toFixed(2),
+      variable_price: formData.value.variable_price || false,
+      category: formData.value.category?.trim() || undefined,
+      meta_data: Object.keys(metadata).length > 0 ? JSON.stringify(metadata) : '{}'
     }
 
     const product = await productsService.createProduct(productData)
@@ -238,7 +303,11 @@ const resetForm = () => {
   formData.value = {
     name: '',
     description: '',
+    details: '',
     price: '0.00',
+    variable_price: false,
+    category: '',
+    duration_minutes: undefined,
     is_active: true
   }
   nameErrors.value = []

@@ -19,11 +19,32 @@ Carrito simple que muestra:
 
           <v-list-item class="cart-item pa-2">
             <div class="d-flex align-center justify-space-between w-100">
-              <!-- Item name and quantity -->
+              <!-- Item name, details and quantity -->
               <div class="flex-grow-1 mr-3">
                 <div class="font-weight-medium">{{ item.name }}</div>
-                <div class="text-caption text-on-surface-variant">
-                  Cantidad: {{ item.quantity }}
+                <div v-if="item.details" class="text-caption text-warning">
+                  {{ item.details }}
+                </div>
+                <div class="d-flex align-center gap-2 mt-1">
+                  <span class="text-caption text-on-surface-variant">Precio:</span>
+                  <v-text-field
+                    v-if="item.variable_price"
+                    :model-value="item.unit_price"
+                    @update:model-value="(val) => updatePrice(item, val)"
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    variant="outlined"
+                    density="compact"
+                    hide-details
+                    class="price-field"
+                    prepend-inner-icon="mdi-currency-usd"
+                    :disabled="!canModifyCart"
+                  />
+                  <span v-else class="text-caption font-weight-bold text-primary">
+                    ${{ parseFloat(item.unit_price).toFixed(2) }}
+                  </span>
+                  <span class="text-caption text-on-surface-variant">× {{ item.quantity }}</span>
                 </div>
               </div>
 
@@ -189,6 +210,12 @@ const removeItem = (item: any) => {
   posStore.removeItem(item.id)
 }
 
+const updatePrice = (item: any, newPrice: string) => {
+  if (newPrice && !isNaN(parseFloat(newPrice))) {
+    posStore.updateItemPrice(item.id, newPrice)
+  }
+}
+
 const addConcept = () => {
   const amount = parseFloat(newConcept.value.amount.replace(/[+\s]/g, ''))
 
@@ -237,6 +264,11 @@ const removeConcept = () => {
 
 .border-t {
   border-top: 1px solid rgba(var(--v-theme-on-surface), 0.12);
+}
+
+/* Price field styling */
+.price-field {
+  max-width: 120px;
 }
 
 /* Custom scrollbar for cart items */

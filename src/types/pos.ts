@@ -72,7 +72,11 @@ export interface UpdateCustomerWalletRequest {
 export interface Product extends BaseEntity {
   name: string
   description?: string
+  details?: string // Additional notes
   price: string // Decimal as string
+  variable_price: boolean // If price is editable in cart
+  category?: string // Product category
+  meta_data: string // JSON metadata
   is_active: boolean
 }
 
@@ -83,13 +87,21 @@ export interface ProductListResponse {
 export interface CreateProductRequest {
   name: string
   description?: string
+  details?: string
   price: string // Decimal as string
+  variable_price?: boolean
+  category?: string
+  meta_data?: string
 }
 
 export interface UpdateProductRequest {
   name?: string
   description?: string
+  details?: string
   price?: string
+  variable_price?: boolean
+  category?: string
+  meta_data?: string
   is_active?: boolean
 }
 
@@ -99,9 +111,11 @@ export interface SaleItem {
   product_id?: string
   name: string
   description?: string
+  details?: string // Additional notes from product
   unit_price: string // Decimal as string
   quantity: number
   total: string // Decimal as string
+  variable_price?: boolean // If price was editable
 }
 
 export interface PaymentMethodItem {

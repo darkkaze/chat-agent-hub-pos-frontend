@@ -102,8 +102,30 @@ Ruta: /products
 
         <!-- Price column -->
         <template #[`item.price`]="{ item }">
-          <div class="font-weight-bold text-primary">
-            ${{ parseFloat(item.price).toFixed(2) }}
+          <div>
+            <div class="font-weight-bold text-primary">
+              ${{ parseFloat(item.price).toFixed(2) }}
+            </div>
+            <v-chip
+              v-if="item.variable_price"
+              color="warning"
+              size="x-small"
+              variant="tonal"
+              class="mt-1"
+            >
+              <v-icon start size="x-small">mdi-pencil</v-icon>
+              Variable
+            </v-chip>
+          </div>
+        </template>
+
+        <!-- Category column -->
+        <template #[`item.category`]="{ item }">
+          <div v-if="item.category" class="text-caption">
+            {{ item.category }}
+          </div>
+          <div v-else class="text-caption text-disabled">
+            Sin categoría
           </div>
         </template>
 
@@ -215,10 +237,11 @@ const snackbarColor = ref<'success' | 'error'>('success')
 
 // Table configuration
 const tableHeaders = [
-  { title: 'Producto', key: 'name', sortable: true, width: '40%' },
+  { title: 'Producto', key: 'name', sortable: true, width: '35%' },
   { title: 'Precio', key: 'price', sortable: true, width: '15%' },
-  { title: 'Estado', key: 'is_active', sortable: true, width: '15%' },
-  { title: 'Acciones', key: 'actions', sortable: false, align: 'center' as const, width: '30%' }
+  { title: 'Categoría', key: 'category', sortable: true, width: '15%' },
+  { title: 'Estado', key: 'is_active', sortable: true, width: '10%' },
+  { title: 'Acciones', key: 'actions', sortable: false, align: 'center' as const, width: '25%' }
 ]
 
 const statusOptions = [

@@ -155,9 +155,11 @@ const addProductToCart = (product: Product) => {
     product_id: product.id,
     name: product.name,
     description: product.description,
+    details: product.details,
     unit_price: product.price,
     quantity: 1,
-    total: product.price
+    total: product.price,
+    variable_price: product.variable_price
   })
 
   // Clear search after adding

@@ -71,6 +71,21 @@ Emits:
             no-resize
           />
 
+          <!-- Product Details -->
+          <v-textarea
+            v-model="formData.details"
+            label="Detalles (opcional)"
+            placeholder="Ej: + gel GRATIS, SIN DISEÑOS"
+            prepend-inner-icon="mdi-note-text"
+            variant="outlined"
+            density="compact"
+            class="mb-4"
+            rows="2"
+            counter="200"
+            maxlength="200"
+            no-resize
+          />
+
           <!-- Product Price -->
           <v-text-field
             v-model="formData.price"
@@ -86,6 +101,42 @@ Emits:
             min="0"
             class="mb-4"
             required
+          />
+
+          <!-- Variable Price -->
+          <v-switch
+            v-model="formData.variable_price"
+            color="warning"
+            label="Precio variable"
+            messages="Si está activo, el precio podrá editarse en el carrito"
+            persistent-hint
+            class="mb-4"
+          />
+
+          <!-- Category -->
+          <v-text-field
+            v-model="formData.category"
+            label="Categoría (opcional)"
+            placeholder="Ej: Servicios de Uñas, Depilaciones"
+            prepend-inner-icon="mdi-tag"
+            variant="outlined"
+            density="compact"
+            class="mb-4"
+            counter="50"
+            maxlength="50"
+          />
+
+          <!-- Duration -->
+          <v-text-field
+            v-model="formData.duration_minutes"
+            label="Duración en minutos (opcional)"
+            placeholder="Ej: 30, 60, 120"
+            prepend-inner-icon="mdi-clock-outline"
+            variant="outlined"
+            density="compact"
+            type="number"
+            min="0"
+            class="mb-4"
           />
 
           <!-- Active Status -->
@@ -163,18 +214,26 @@ const form = ref<any>(null)
 const isUpdating = ref(false)
 
 // Form data
-const formData = ref<UpdateProductRequest & { is_active: boolean }>({
+const formData = ref<UpdateProductRequest & { is_active: boolean; duration_minutes?: number }>({
   name: '',
   description: '',
+  details: '',
   price: '0.00',
+  variable_price: false,
+  category: '',
+  duration_minutes: undefined,
   is_active: true
 })
 
 // Original data for change detection
-const originalData = ref<UpdateProductRequest & { is_active: boolean }>({
+const originalData = ref<UpdateProductRequest & { is_active: boolean; duration_minutes?: number }>({
   name: '',
   description: '',
+  details: '',
   price: '0.00',
+  variable_price: false,
+  category: '',
+  duration_minutes: undefined,
   is_active: true
 })
 
@@ -216,7 +275,11 @@ const isFormValid = computed(() => {
 const hasChanges = computed(() => {
   return formData.value.name !== originalData.value.name ||
          formData.value.description !== originalData.value.description ||
+         formData.value.details !== originalData.value.details ||
          formData.value.price !== originalData.value.price ||
+         formData.value.variable_price !== originalData.value.variable_price ||
+         formData.value.category !== originalData.value.category ||
+         formData.value.duration_minutes !== originalData.value.duration_minutes ||
          formData.value.is_active !== originalData.value.is_active
 })
 
@@ -241,8 +304,25 @@ const handleSubmit = async () => {
     if (formData.value.description !== originalData.value.description) {
       updateData.description = formData.value.description?.trim() || undefined
     }
+    if (formData.value.details !== originalData.value.details) {
+      updateData.details = formData.value.details?.trim() || undefined
+    }
     if (formData.value.price !== originalData.value.price) {
       updateData.price = parseFloat(formData.value.price || '0').toFixed(2)
+    }
+    if (formData.value.variable_price !== originalData.value.variable_price) {
+      updateData.variable_price = formData.value.variable_price
+    }
+    if (formData.value.category !== originalData.value.category) {
+      updateData.category = formData.value.category?.trim() || undefined
+    }
+    if (formData.value.duration_minutes !== originalData.value.duration_minutes) {
+      // Build metadata
+      const metadata: any = {}
+      if (formData.value.duration_minutes) {
+        metadata.duration_minutes = formData.value.duration_minutes
+      }
+      updateData.meta_data = Object.keys(metadata).length > 0 ? JSON.stringify(metadata) : '{}'
     }
 
     const updatedProduct = await productsService.updateProduct(props.product.id, updateData)
@@ -271,10 +351,23 @@ const handleCancel = () => {
 
 const loadProductData = () => {
   if (props.product) {
+    // Parse meta_data for duration
+    let duration_minutes: number | undefined = undefined
+    try {
+      const meta_data = JSON.parse(props.product.meta_data || '{}')
+      duration_minutes = meta_data.duration_minutes
+    } catch (e) {
+      // Ignore parse errors
+    }
+
     const productData = {
       name: props.product.name || '',
       description: props.product.description || '',
+      details: props.product.details || '',
       price: props.product.price || '0.00',
+      variable_price: props.product.variable_price || false,
+      category: props.product.category || '',
+      duration_minutes,
       is_active: props.product.is_active
     }
 

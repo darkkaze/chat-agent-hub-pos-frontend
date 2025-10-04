@@ -25,9 +25,11 @@ interface CartItem {
   product_id?: string
   name: string
   description?: string
+  details?: string // Additional notes from product
   unit_price: string
   quantity: number
   total: string
+  variable_price?: boolean // If price is editable
 }
 
 interface PaymentItem {
@@ -115,6 +117,17 @@ export const usePOSStore = defineStore('pos', () => {
     }
   }
 
+  const updateItemPrice = (itemId: string, newPrice: string) => {
+    const item = cartItems.value.find(item => item.id === itemId)
+    if (item && item.variable_price) {
+      const price = parseFloat(newPrice)
+      if (!isNaN(price) && price >= 0) {
+        item.unit_price = price.toFixed(2)
+        item.total = (price * item.quantity).toFixed(2)
+      }
+    }
+  }
+
   const updatePaymentMethod = (method: PaymentMethod, amount: string, enabled: boolean) => {
     const payment = paymentMethods.value.find(pm => pm.method === method)
     if (payment) {
@@ -146,9 +159,11 @@ export const usePOSStore = defineStore('pos', () => {
         product_id: item.product_id,
         name: item.name,
         description: item.description,
+        details: item.details,
         unit_price: item.unit_price,
         quantity: item.quantity,
-        total: item.total
+        total: item.total,
+        variable_price: item.variable_price
       }))
 
       // Convert payment methods to API format
@@ -200,6 +215,7 @@ export const usePOSStore = defineStore('pos', () => {
     addItem,
     removeItem,
     updateItemQuantity,
+    updateItemPrice,
     updatePaymentMethod,
     clearCart,
     processSale
