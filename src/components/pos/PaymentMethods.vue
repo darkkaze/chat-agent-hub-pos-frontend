@@ -26,9 +26,6 @@ Emits: ninguno
             </div>
             <v-text-field
               v-model="payments.cash.amount"
-              type="number"
-              step="0.01"
-              min="0"
               placeholder="0.00"
               prefix="$"
               variant="outlined"
@@ -49,9 +46,6 @@ Emits: ninguno
             </div>
             <v-text-field
               v-model="payments.card.amount"
-              type="number"
-              step="0.01"
-              min="0"
               placeholder="0.00"
               prefix="$"
               variant="outlined"
@@ -72,9 +66,6 @@ Emits: ninguno
             </div>
             <v-text-field
               v-model="payments.transfer.amount"
-              type="number"
-              step="0.01"
-              min="0"
               placeholder="0.00"
               prefix="$"
               variant="outlined"
@@ -96,10 +87,6 @@ Emits: ninguno
             <div class="flex-grow-1">
               <v-text-field
                 v-model="payments.loyalty_points.amount"
-                type="number"
-                step="0.01"
-                min="0"
-                :max="customerLoyaltyPoints"
                 placeholder="0.00"
                 prefix="$"
                 variant="outlined"
