@@ -143,18 +143,40 @@ Emits: ninguno
         class="payment-summary"
       >
         <v-card-text class="pa-3">
+          <!-- Subtotal -->
           <div class="d-flex justify-space-between align-center mb-2">
-            <span class="text-body-1">Total a Pagar:</span>
-            <span class="font-weight-bold text-h6 text-error">${{ totalAmount }}</span>
+            <span class="text-body-2 text-on-surface-variant">Subtotal</span>
+            <span class="font-weight-medium">${{ subtotal }}</span>
           </div>
 
+          <!-- Ajustes -->
+          <div class="d-flex justify-space-between align-center mb-2">
+            <span class="text-body-2 text-on-surface-variant">Ajustes</span>
+            <span
+              class="font-weight-medium"
+              :class="adjustmentsAmount >= 0 ? 'text-success' : 'text-error'"
+            >
+              {{ adjustmentsAmount >= 0 ? '+' : '' }}${{ adjustmentsAmount.toFixed(2) }}
+            </span>
+          </div>
+
+          <v-divider class="my-2" />
+
+          <!-- Total a Pagar -->
+          <div class="d-flex justify-space-between align-center mb-3">
+            <span class="text-body-1 font-weight-medium">Total a Pagar:</span>
+            <span class="font-weight-bold text-h6 text-primary">${{ totalAmount }}</span>
+          </div>
+
+          <v-divider class="my-2" />
+
+          <!-- Total Pagado -->
           <div class="d-flex justify-space-between align-center mb-2">
             <span class="text-body-1">Total Pagado:</span>
             <span class="font-weight-bold text-h6 text-success">${{ totalPaymentAmount }}</span>
           </div>
 
-          <v-divider class="my-2" />
-
+          <!-- Diferencia -->
           <div class="d-flex justify-space-between align-center">
             <span class="font-weight-bold">Diferencia:</span>
             <span class="font-weight-bold text-h5" :class="remainingAmount === '0.00' ? 'text-success' : 'text-warning'">
@@ -209,10 +231,14 @@ const payments = ref({
 })
 
 // Computed
+const subtotal = computed(() => posStore.subtotal)
+const adjustmentsTotal = computed(() => posStore.adjustmentsTotal)
 const totalAmount = computed(() => posStore.totalAmount)
 const totalPaymentAmount = computed(() => posStore.totalPaymentAmount)
 const isPaymentValid = computed(() => posStore.isPaymentValid)
 const customerLoyaltyPoints = computed(() => customerStore.customerLoyaltyPoints)
+
+const adjustmentsAmount = computed(() => parseFloat(adjustmentsTotal.value))
 
 const canModifyPayments = computed(() => {
   return customerStore.hasCustomer &&
@@ -247,15 +273,15 @@ const loyaltyErrorMessage = computed(() => {
 
 // Methods
 const updatePayment = (method: string, amount: string | number) => {
-  const numAmount = typeof amount === 'string' ? amount : amount.toString()
-  const cleanAmount = parseFloat(numAmount) || 0
+  const strAmount = typeof amount === 'string' ? amount : amount.toString()
 
-  // Update local state
-  payments.value[method as keyof typeof payments.value].amount = cleanAmount > 0 ? cleanAmount.toFixed(2) : ''
+  // Keep the value as-is while typing (don't format)
+  payments.value[method as keyof typeof payments.value].amount = strAmount
 
   // Validate loyalty points limit
-  if (method === 'loyalty_points' && cleanAmount > customerLoyaltyPoints.value) {
-    payments.value.loyalty_points.amount = customerLoyaltyPoints.value.toFixed(2)
+  const numAmount = parseFloat(strAmount) || 0
+  if (method === 'loyalty_points' && numAmount > customerLoyaltyPoints.value) {
+    payments.value.loyalty_points.amount = customerLoyaltyPoints.value.toString()
   }
 
   // Update store - method is enabled if amount > 0

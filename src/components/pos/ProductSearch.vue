@@ -10,20 +10,32 @@ Emits: ninguno
 
 <template>
   <div class="product-search">
-    <!-- Search Input -->
-    <v-text-field
-      v-model="searchQuery"
-      label="Buscar producto..."
-      placeholder="Nombre o descripción del producto"
-      prepend-inner-icon="mdi-magnify"
-      variant="outlined"
-      density="compact"
-      :loading="isSearching"
-      :disabled="!canAddProducts"
-      clearable
-      class="mb-4"
-      @update:model-value="handleSearch"
-    />
+    <!-- Search Input with View All Button -->
+    <div class="d-flex gap-2 mb-4">
+      <v-text-field
+        v-model="searchQuery"
+        label="Buscar producto..."
+        placeholder="Nombre o descripción del producto"
+        prepend-inner-icon="mdi-magnify"
+        variant="outlined"
+        density="compact"
+        :loading="isSearching"
+        :disabled="!canAddProducts"
+        clearable
+        class="flex-grow-1"
+        @update:model-value="handleSearch"
+      />
+
+      <v-btn
+        color="primary"
+        variant="tonal"
+        :disabled="!canAddProducts"
+        @click="showProductsModal = true"
+      >
+        <v-icon start>mdi-format-list-bulleted</v-icon>
+        Ver Todos
+      </v-btn>
+    </div>
 
     <!-- Search Results -->
     <div v-if="searchResults.length > 0" class="search-results mb-4">
@@ -90,10 +102,11 @@ Emits: ninguno
     </div>
 
 
-    <!-- Helper Text -->
-    <div v-if="!canAddProducts" class="text-caption text-error mt-2">
-      ⚠️ Selecciona un cliente para agregar productos
-    </div>
+    <!-- Products List Modal -->
+    <ProductsListModal
+      v-model="showProductsModal"
+      @product-selected="addProductToCart"
+    />
   </div>
 </template>
 
@@ -103,6 +116,7 @@ import type { Product, SaleItemType } from '@/types/pos'
 import { useCustomerStore } from '@/stores/customer'
 import { usePOSStore } from '@/stores/pos'
 import { productsService } from '@/services/pos'
+import ProductsListModal from '@/components/pos/ProductsListModal.vue'
 
 const customerStore = useCustomerStore()
 const posStore = usePOSStore()
@@ -113,9 +127,10 @@ const searchResults = ref<Product[]>([])
 const hasSearched = ref<boolean>(false)
 const isSearching = ref<boolean>(false)
 const searchTimeout = ref<number | null>(null)
+const showProductsModal = ref<boolean>(false)
 
 // Computed
-const canAddProducts = computed(() => customerStore.hasCustomer)
+const canAddProducts = computed(() => !posStore.isProcessingSale)
 
 // Methods
 const handleSearch = async (query: string | null) => {
@@ -174,9 +189,9 @@ const showCreateProductDialog = () => {
   console.log('Show create product dialog for:', searchQuery.value)
 }
 
-// Watch for customer changes to clear search
-watch(() => customerStore.currentCustomer, (customer) => {
-  if (!customer) {
+// Clear search when cart is cleared (after successful sale)
+watch(() => posStore.cartItems.length, (newLength, oldLength) => {
+  if (oldLength > 0 && newLength === 0) {
     searchQuery.value = ''
     searchResults.value = []
     hasSearched.value = false
@@ -211,4 +226,8 @@ onUnmounted(() => {
   overflow-y: auto;
 }
 
+/* Gap utility for flex layout */
+.gap-2 {
+  gap: 8px;
+}
 </style>

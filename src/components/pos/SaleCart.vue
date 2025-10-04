@@ -114,7 +114,7 @@ Carrito con diseño de tabla:
         Carrito vacío
       </h3>
       <p class="text-body-2 text-on-surface-variant text-center">
-        {{ canModifyCart ? 'Busca y agrega productos para comenzar la venta' : 'Selecciona un cliente para agregar productos' }}
+        Busca y agrega productos para comenzar la venta
       </p>
     </div>
   </div>
@@ -130,7 +130,7 @@ const customerStore = useCustomerStore()
 
 // Computed
 const cartItems = computed(() => posStore.cartItems)
-const canModifyCart = computed(() => customerStore.hasCustomer && !posStore.isProcessingSale)
+const canModifyCart = computed(() => !posStore.isProcessingSale)
 
 // Methods
 const increaseQuantity = (item: any) => {

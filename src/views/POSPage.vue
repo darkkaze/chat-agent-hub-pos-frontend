@@ -11,11 +11,6 @@ Layout responsive con diseño 2/3 + 1/3 siguiendo las especificaciones.
 
 <template>
   <div class="pos-page">
-    <!-- Customer Search Section -->
-    <div class="customer-section">
-      <CustomerSearch />
-    </div>
-
     <!-- Main POS Content -->
     <div class="pos-content">
       <!-- Products Section (2/3) -->
@@ -40,26 +35,19 @@ Layout responsive con diseño 2/3 + 1/3 siguiendo las especificaciones.
         </v-card>
       </div>
 
-      <!-- Summary Section (1/3) -->
-      <div class="summary-section">
-        <v-card elevation="2" class="h-100 d-flex flex-column">
-          <v-card-title class="d-flex align-center pa-2 bg-primary">
-            <v-icon class="me-2 text-white">mdi-calculator</v-icon>
-            <span class="text-white font-weight-bold">Resumen Venta</span>
-          </v-card-title>
+      <!-- Right Section (1/3) -->
+      <div class="right-section">
+        <div class="d-flex flex-column h-100 gap-3">
+          <!-- Customer Search -->
+          <div class="customer-section">
+            <CustomerSearch />
+          </div>
 
-          <v-card-text class="pa-0 flex-grow-1 d-flex flex-column">
-            <!-- Sale Summary -->
-            <div class="sale-summary-section flex-grow-1">
-              <SaleSummary />
-            </div>
-
-            <!-- Payment Methods -->
-            <div class="payment-methods-section">
-              <PaymentMethods @sale-completed="handleSaleCompleted" />
-            </div>
-          </v-card-text>
-        </v-card>
+          <!-- Payment Methods -->
+          <div class="payment-section flex-grow-1">
+            <PaymentMethods @sale-completed="handleSaleCompleted" />
+          </div>
+        </div>
       </div>
     </div>
 
@@ -142,7 +130,6 @@ import CustomerSearch from '@/components/pos/CustomerSearch.vue'
 import ProductSearch from '@/components/pos/ProductSearch.vue'
 import SaleCart from '@/components/pos/SaleCart.vue'
 import PaymentMethods from '@/components/pos/PaymentMethods.vue'
-import SaleSummary from '@/components/pos/SaleSummary.vue'
 
 const customerStore = useCustomerStore()
 const posStore = usePOSStore()
@@ -184,18 +171,13 @@ const startNewSale = () => {
   flex-direction: column;
 }
 
-/* Customer search section */
-.customer-section {
-  flex-shrink: 0;
-  margin-bottom: 16px;
-}
-
 /* Main content area with 2/3 + 1/3 grid */
 .pos-content {
   display: grid;
   grid-template-columns: 2fr 1fr;
   gap: 16px;
   flex-grow: 1;
+  height: calc(100vh - 32px);
 }
 
 /* Products section (2/3) */
@@ -203,9 +185,15 @@ const startNewSale = () => {
   /* Allow natural height expansion */
 }
 
-/* Summary section (1/3) */
-.summary-section {
-  /* Allow natural height expansion */
+/* Right section (1/3) */
+.right-section {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Gap utility for flex column */
+.gap-3 {
+  gap: 16px;
 }
 
 
@@ -229,17 +217,8 @@ const startNewSale = () => {
     gap: 12px;
   }
 
-  .summary-section {
+  .right-section {
     max-height: 50vh;
-  }
-
-  .customer-section {
-    padding: 12px;
-    padding-bottom: 0;
-  }
-
-  .pos-content {
-    padding: 12px;
   }
 }
 
@@ -254,8 +233,8 @@ const startNewSale = () => {
     padding: 8px;
   }
 
-  .summary-section {
-    order: -1; /* Show summary first on mobile */
+  .right-section {
+    order: -1; /* Show right section first on mobile */
     max-height: none;
   }
 
@@ -269,26 +248,26 @@ const startNewSale = () => {
   height: 100% !important;
 }
 
-/* Custom scrollbar for payment methods section */
-.payment-methods-section {
+/* Custom scrollbar for payment section */
+.payment-section {
   scrollbar-width: thin;
   scrollbar-color: rgba(var(--v-theme-primary), 0.3) transparent;
 }
 
-.payment-methods-section::-webkit-scrollbar {
+.payment-section::-webkit-scrollbar {
   width: 4px;
 }
 
-.payment-methods-section::-webkit-scrollbar-track {
+.payment-section::-webkit-scrollbar-track {
   background: transparent;
 }
 
-.payment-methods-section::-webkit-scrollbar-thumb {
+.payment-section::-webkit-scrollbar-thumb {
   background: rgba(var(--v-theme-primary), 0.3);
   border-radius: 2px;
 }
 
-.payment-methods-section::-webkit-scrollbar-thumb:hover {
+.payment-section::-webkit-scrollbar-thumb:hover {
   background: rgba(var(--v-theme-primary), 0.5);
 }
 
