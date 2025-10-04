@@ -26,9 +26,10 @@ Emits: ninguno
               v-model="payments.cash.amount"
               placeholder="0.00"
               prefix="$"
-              variant="underlined"
+              variant="solo"
               density="compact"
               hide-details
+              flat
               class="payment-input"
               :disabled="!canModifyPayments"
               @update:model-value="updatePayment('cash', $event)"
@@ -45,9 +46,10 @@ Emits: ninguno
               v-model="payments.card.amount"
               placeholder="0.00"
               prefix="$"
-              variant="underlined"
+              variant="solo"
               density="compact"
               hide-details
+              flat
               class="payment-input"
               :disabled="!canModifyPayments"
               @update:model-value="updatePayment('card', $event)"
@@ -64,9 +66,10 @@ Emits: ninguno
               v-model="payments.transfer.amount"
               placeholder="0.00"
               prefix="$"
-              variant="underlined"
+              variant="solo"
               density="compact"
               hide-details
+              flat
               class="payment-input"
               :disabled="!canModifyPayments"
               @update:model-value="updatePayment('transfer', $event)"
@@ -83,9 +86,10 @@ Emits: ninguno
               v-model="payments.loyalty_points.amount"
               placeholder="0.00"
               prefix="$"
-              variant="underlined"
+              variant="solo"
               density="compact"
               :hide-details="!isLoyaltyAmountInvalid"
+              flat
               class="payment-input"
               :disabled="!canModifyPayments || !hasLoyaltyPoints"
               :error="isLoyaltyAmountInvalid"
