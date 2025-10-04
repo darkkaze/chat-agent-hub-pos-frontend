@@ -138,8 +138,6 @@ Emits: ninguno
             density="compact"
             :disabled="!canModifyPayments"
             :loading="staffStore.isLoading"
-            :error="!staffStore.hasCurrentStaff && hasAnyPayment"
-            :error-messages="!staffStore.hasCurrentStaff && hasAnyPayment ? 'Debe seleccionar el personal que atiende' : undefined"
           >
             <template #prepend-item>
               <v-list-item v-if="staffStore.activeStaff.length === 0" disabled>
@@ -155,59 +153,29 @@ Emits: ninguno
       <!-- Payment Summary -->
       <v-card
         variant="outlined"
-        :color="isPaymentValid ? 'success' : 'error'"
         class="payment-summary"
       >
         <v-card-text class="pa-3">
           <div class="d-flex justify-space-between align-center mb-2">
-            <span class="font-weight-medium">Total a Pagar:</span>
-            <span class="font-weight-bold text-h6">${{ totalAmount }}</span>
+            <span class="text-body-1">Total a Pagar:</span>
+            <span class="font-weight-bold text-h6 text-error">${{ totalAmount }}</span>
           </div>
 
           <div class="d-flex justify-space-between align-center mb-2">
-            <span class="font-weight-medium">Total Pagado:</span>
-            <span class="font-weight-bold text-h6" :class="paymentStatusColor">
-              ${{ totalPaymentAmount }}
-            </span>
+            <span class="text-body-1">Total Pagado:</span>
+            <span class="font-weight-bold text-h6 text-success">${{ totalPaymentAmount }}</span>
           </div>
 
           <v-divider class="my-2" />
 
           <div class="d-flex justify-space-between align-center">
             <span class="font-weight-bold">Diferencia:</span>
-            <span class="font-weight-bold text-h6" :class="differenceColor">
-              ${{ paymentDifference }}
+            <span class="font-weight-bold text-h5" :class="remainingAmount === '0.00' ? 'text-success' : 'text-warning'">
+              ${{ remainingAmount }}
             </span>
           </div>
-
-          <!-- Payment Status -->
-          <v-alert
-            v-if="!isPaymentValid && hasAnyPayment"
-            :type="parseFloat(paymentDifference) > 0 ? 'warning' : 'error'"
-            variant="tonal"
-            density="compact"
-            class="mt-3"
-          >
-            {{ parseFloat(paymentDifference) > 0 ? 'Falta dinero por pagar' : 'Hay un exceso en el pago' }}
-          </v-alert>
-
-          <v-alert
-            v-else-if="isPaymentValid && hasAnyPayment"
-            type="success"
-            variant="tonal"
-            density="compact"
-            class="mt-3"
-          >
-            <v-icon start>mdi-check-circle</v-icon>
-            Pago completo y correcto
-          </v-alert>
         </v-card-text>
       </v-card>
-
-      <!-- Helper Text -->
-      <div v-if="!canModifyPayments" class="text-caption text-error mt-2">
-        ⚠️ Agrega productos al carrito para configurar pagos
-      </div>
 
       <!-- Register Sale Button -->
       <div class="mt-4">
@@ -272,26 +240,10 @@ const isProcessingSale = computed(() => posStore.isProcessingSale)
 
 const hasLoyaltyPoints = computed(() => customerLoyaltyPoints.value > 0)
 
-const hasAnyPayment = computed(() => {
-  return Object.values(payments.value).some(p => parseFloat(p.amount || '0') > 0)
-})
-
-const paymentDifference = computed(() => {
+const remainingAmount = computed(() => {
   const total = parseFloat(totalAmount.value)
   const paid = parseFloat(totalPaymentAmount.value)
-  return Math.abs(total - paid).toFixed(2)
-})
-
-const paymentStatusColor = computed(() => {
-  if (!hasAnyPayment.value) return 'text-on-surface-variant'
-  return isPaymentValid.value ? 'text-success' : 'text-error'
-})
-
-const differenceColor = computed(() => {
-  if (parseFloat(paymentDifference.value) === 0) return 'text-success'
-  const total = parseFloat(totalAmount.value)
-  const paid = parseFloat(totalPaymentAmount.value)
-  return total > paid ? 'text-warning' : 'text-error'
+  return Math.max(0, total - paid).toFixed(2)
 })
 
 const isLoyaltyAmountInvalid = computed(() => {
@@ -327,44 +279,7 @@ const updatePayment = (method: string, amount: string | number) => {
   posStore.updatePaymentMethod(paymentMethod, finalAmount, isEnabled)
 }
 
-// Watch for payment amount changes
-watch(() => payments.value, (newPayments) => {
-  Object.entries(newPayments).forEach(([method, payment]) => {
-    const paymentMethod = method.toUpperCase() as PaymentMethod
-    const isEnabled = parseFloat(payment.amount || '0') > 0
-    posStore.updatePaymentMethod(
-      paymentMethod,
-      payment.amount,
-      isEnabled
-    )
-  })
-}, { deep: true })
-
-// Auto-fill remaining amount when only one payment method has value
-const autoFillAmount = () => {
-  const methodsWithValue = Object.entries(payments.value).filter(([_, p]) => parseFloat(p.amount || '0') > 0)
-
-  if (methodsWithValue.length === 1) {
-    const [method, payment] = methodsWithValue[0]
-    const total = parseFloat(totalAmount.value)
-    const currentAmount = parseFloat(payment.amount || '0')
-
-    // Only auto-fill if current amount is less than total
-    if (currentAmount < total) {
-      if (method === 'loyalty_points') {
-        const maxAmount = Math.min(total, customerLoyaltyPoints.value)
-        payment.amount = maxAmount.toFixed(2)
-      } else {
-        payment.amount = total.toFixed(2)
-      }
-
-      updatePayment(method, payment.amount)
-    }
-  }
-}
-
-// Watch for payment amount changes to auto-fill
-watch(() => Object.values(payments.value).map(p => p.amount), autoFillAmount)
+// No auto-fill logic - user controls all inputs manually
 
 // Sale processing method
 const handleProcessSale = async () => {

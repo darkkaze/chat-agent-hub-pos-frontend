@@ -1,195 +1,144 @@
 <!--
-SaleCart Component - Simplificado
+SaleCart Component - Table Layout
 
-Carrito simple que muestra:
-- Nombre del item
-- Cantidad
-- Total del item
-- Concepto libre con ajustes +/-
+Carrito con diseño de tabla:
+- Columnas: Producto | Costo Unitario | Cantidad | Adicional | Total
+- Botón trash para eliminar
+- Detalles del producto bajo el nombre
 -->
 
 <template>
   <div class="sale-cart">
-    <!-- Cart Items -->
-    <div v-if="cartItems.length > 0 || customConcept" class="cart-items">
-      <v-list density="compact">
-        <!-- Products/Services Items -->
-        <template v-for="(item, index) in cartItems" :key="item.id">
-          <v-divider v-if="index > 0" />
+    <!-- Cart Table -->
+    <div v-if="cartItems.length > 0" class="cart-table">
+      <v-table density="compact">
+        <thead>
+          <tr>
+            <th class="text-left text-uppercase font-weight-bold" style="width: 40px;"></th>
+            <th class="text-left text-uppercase font-weight-bold">Producto</th>
+            <th class="text-center text-uppercase font-weight-bold" style="width: 140px;">Costo Unitario</th>
+            <th class="text-center text-uppercase font-weight-bold" style="width: 160px;">Cantidad</th>
+            <th class="text-center text-uppercase font-weight-bold" style="width: 140px;">Adicional</th>
+            <th class="text-right text-uppercase font-weight-bold" style="width: 120px;">Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="item in cartItems" :key="item.id" class="cart-row">
+            <!-- Delete Button -->
+            <td>
+              <v-btn
+                icon
+                size="small"
+                variant="text"
+                color="on-surface-variant"
+                @click="removeItem(item)"
+                :disabled="!canModifyCart"
+              >
+                <v-icon size="20">mdi-delete-outline</v-icon>
+              </v-btn>
+            </td>
 
-          <v-list-item class="cart-item pa-2">
-            <div class="d-flex align-center justify-space-between w-100">
-              <!-- Item name, details and quantity -->
-              <div class="flex-grow-1 mr-3">
-                <div class="font-weight-medium">{{ item.name }}</div>
-                <div v-if="item.details" class="text-caption text-warning">
+            <!-- Product Name & Details -->
+            <td>
+              <div class="product-info">
+                <div class="product-name font-weight-bold">{{ item.name }}</div>
+                <div v-if="item.details" class="product-details text-caption text-medium-emphasis">
                   {{ item.details }}
                 </div>
-                <div class="d-flex align-center gap-2 mt-1">
-                  <span class="text-caption text-on-surface-variant">Precio:</span>
-                  <v-text-field
-                    v-if="item.variable_price"
-                    :model-value="item.unit_price"
-                    @update:model-value="(val) => updatePrice(item, val)"
-                    type="number"
-                    step="0.01"
-                    min="0"
-                    variant="outlined"
-                    density="compact"
-                    hide-details
-                    class="price-field"
-                    prepend-inner-icon="mdi-currency-usd"
-                    :disabled="!canModifyCart"
-                  />
-                  <span v-else class="text-caption font-weight-bold text-primary">
-                    ${{ parseFloat(item.unit_price).toFixed(2) }}
-                  </span>
-                  <span class="text-caption text-on-surface-variant">× {{ item.quantity }}</span>
-                </div>
               </div>
+            </td>
 
-              <!-- Total -->
-              <div class="text-right">
-                <div class="font-weight-bold text-primary">
-                  ${{ parseFloat(item.total).toFixed(2) }}
-                </div>
+            <!-- Unit Price -->
+            <td class="text-center">
+              <v-text-field
+                v-if="item.variable_price"
+                :model-value="item.unit_price"
+                @update:model-value="(val) => updatePrice(item, val)"
+                type="number"
+                step="0.01"
+                min="0"
+                variant="outlined"
+                density="compact"
+                hide-details
+                prefix="$"
+                :disabled="!canModifyCart"
+                class="unit-price-field"
+              />
+              <span v-else class="font-weight-medium">${{ parseFloat(item.unit_price).toFixed(2) }}</span>
+            </td>
 
-                <!-- Quantity Controls -->
-                <div class="d-flex align-center mt-1">
-                  <v-btn
-                    size="x-small"
-                    variant="text"
-                    color="error"
-                    @click="decreaseQuantity(item)"
-                    :disabled="item.quantity <= 1 || !canModifyCart"
-                  >
-                    <v-icon size="small">mdi-minus</v-icon>
-                  </v-btn>
+            <!-- Quantity Controls -->
+            <td class="text-center">
+              <div class="d-flex align-center justify-center quantity-controls">
+                <v-btn
+                  icon
+                  size="small"
+                  variant="outlined"
+                  @click="decreaseQuantity(item)"
+                  :disabled="item.quantity <= 1 || !canModifyCart"
+                >
+                  <v-icon size="16">mdi-minus</v-icon>
+                </v-btn>
 
-                  <span class="mx-1 text-caption">{{ item.quantity }}</span>
-
-                  <v-btn
-                    size="x-small"
-                    variant="text"
-                    color="success"
-                    @click="increaseQuantity(item)"
-                    :disabled="!canModifyCart"
-                  >
-                    <v-icon size="small">mdi-plus</v-icon>
-                  </v-btn>
-
-                  <v-btn
-                    size="x-small"
-                    variant="text"
-                    color="error"
-                    class="ml-1"
-                    @click="removeItem(item)"
-                    :disabled="!canModifyCart"
-                  >
-                    <v-icon size="small">mdi-delete</v-icon>
-                  </v-btn>
-                </div>
-              </div>
-            </div>
-          </v-list-item>
-        </template>
-
-        <!-- Custom Concept Item -->
-        <template v-if="customConcept && customConcept.amount !== 0">
-          <v-divider v-if="cartItems.length > 0" />
-
-          <v-list-item class="cart-item pa-2">
-            <div class="d-flex align-center justify-space-between w-100">
-              <div class="flex-grow-1 mr-3">
-                <div class="font-weight-medium">{{ customConcept.description || 'Concepto' }}</div>
-                <div class="text-caption text-on-surface-variant">Ajuste manual</div>
-              </div>
-
-              <div class="text-right">
-                <div class="font-weight-bold" :class="customConcept.amount >= 0 ? 'text-success' : 'text-error'">
-                  {{ customConcept.amount >= 0 ? '+' : '' }}${{ Math.abs(customConcept.amount).toFixed(2) }}
-                </div>
+                <span class="mx-3 font-weight-medium">{{ item.quantity }}</span>
 
                 <v-btn
-                  size="x-small"
-                  variant="text"
-                  color="error"
-                  class="mt-1"
-                  @click="removeConcept"
+                  icon
+                  size="small"
+                  variant="outlined"
+                  @click="increaseQuantity(item)"
                   :disabled="!canModifyCart"
                 >
-                  <v-icon size="small">mdi-delete</v-icon>
+                  <v-icon size="16">mdi-plus</v-icon>
                 </v-btn>
               </div>
-            </div>
-          </v-list-item>
-        </template>
-      </v-list>
+            </td>
 
-      <!-- Add Custom Concept -->
-      <div v-if="canModifyCart" class="pa-3 border-t">
-        <v-text-field
-          v-model="newConcept.description"
-          label="Concepto (opcional)"
-          variant="outlined"
-          density="compact"
-          hide-details
-          class="mb-2"
-        />
+            <!-- Additional Amount -->
+            <td class="text-center">
+              <v-text-field
+                v-model="item.additional"
+                variant="outlined"
+                density="compact"
+                hide-details
+                placeholder="0.00"
+                :disabled="!canModifyCart"
+                class="additional-field"
+                @update:model-value="updateAdditional(item)"
+              />
+            </td>
 
-        <div class="d-flex align-center gap-2">
-          <v-text-field
-            v-model="newConcept.amount"
-            label="Ajuste (+100 / -50)"
-            variant="outlined"
-            density="compact"
-            hide-details
-            placeholder="ej: +100 o -50"
-            class="flex-grow-1"
-          />
-
-          <v-btn
-            color="primary"
-            variant="flat"
-            @click="addConcept"
-            :disabled="!newConcept.amount"
-          >
-            <v-icon>mdi-plus</v-icon>
-          </v-btn>
-        </div>
-      </div>
+            <!-- Total -->
+            <td class="text-right">
+              <span class="font-weight-bold text-h6">${{ calculateItemTotal(item).toFixed(2) }}</span>
+            </td>
+          </tr>
+        </tbody>
+      </v-table>
     </div>
 
-        <!-- Empty State -->
-        <div v-else class="empty-cart d-flex flex-column align-center justify-center h-100 pa-6">
-          <v-icon size="80" color="on-surface-variant" class="mb-4">
-            mdi-cart-outline
-          </v-icon>
-          <h3 class="text-h6 text-on-surface-variant text-center mb-2">
-            Carrito vacío
-          </h3>
-          <p class="text-body-2 text-on-surface-variant text-center">
-            {{ canModifyCart ? 'Busca y agrega productos para comenzar la venta' : 'Selecciona un cliente para agregar productos' }}
-          </p>
-        </div>
+    <!-- Empty State -->
+    <div v-else class="empty-cart d-flex flex-column align-center justify-center h-100 pa-6">
+      <v-icon size="80" color="on-surface-variant" class="mb-4">
+        mdi-cart-outline
+      </v-icon>
+      <h3 class="text-h6 text-on-surface-variant text-center mb-2">
+        Carrito vacío
+      </h3>
+      <p class="text-body-2 text-on-surface-variant text-center">
+        {{ canModifyCart ? 'Busca y agrega productos para comenzar la venta' : 'Selecciona un cliente para agregar productos' }}
+      </p>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import { usePOSStore } from '@/stores/pos'
 import { useCustomerStore } from '@/stores/customer'
 
 const posStore = usePOSStore()
 const customerStore = useCustomerStore()
-
-// Reactive data for custom concept
-const newConcept = ref({
-  description: '',
-  amount: ''
-})
-
-const customConcept = ref<{ description: string; amount: number } | null>(null)
 
 // Computed
 const cartItems = computed(() => posStore.cartItems)
@@ -216,90 +165,111 @@ const updatePrice = (item: any, newPrice: string) => {
   }
 }
 
-const addConcept = () => {
-  const amount = parseFloat(newConcept.value.amount.replace(/[+\s]/g, ''))
-
-  if (!isNaN(amount) && amount !== 0) {
-    customConcept.value = {
-      description: newConcept.value.description || 'Ajuste manual',
-      amount: amount
-    }
-
-    // Clear form
-    newConcept.value.description = ''
-    newConcept.value.amount = ''
-  }
+const updateAdditional = (item: any) => {
+  // Additional field is bound directly to item.additional
+  // The value is used in calculateItemTotal
 }
 
-const removeConcept = () => {
-  customConcept.value = null
+const calculateItemTotal = (item: any): number => {
+  const baseTotal = parseFloat(item.unit_price) * item.quantity
+  const additional = parseFloat(item.additional) || 0
+  return baseTotal + additional
 }
 </script>
 
 <style scoped>
 .sale-cart {
   height: 100%;
+  overflow-y: auto;
 }
 
-.cart-items {
-  min-height: 0;
-}
-
-.cart-item {
-  min-height: auto !important;
+.cart-table {
+  width: 100%;
 }
 
 .empty-cart {
-  min-height: 200px;
+  min-height: 400px;
 }
 
-.cart-summary {
-  flex-shrink: 0;
-  background: rgba(var(--v-theme-surface-variant), 0.3);
+/* Product Info */
+.product-info {
+  padding: 8px 0;
 }
 
-.min-width-24 {
-  min-width: 24px;
+.product-name {
+  font-size: 0.95rem;
+  line-height: 1.4;
 }
 
-.border-t {
-  border-top: 1px solid rgba(var(--v-theme-on-surface), 0.12);
+.product-details {
+  color: rgba(var(--v-theme-on-surface), 0.6);
+  margin-top: 2px;
+  line-height: 1.3;
 }
 
-/* Price field styling */
-.price-field {
+/* Input Fields */
+.unit-price-field,
+.additional-field {
   max-width: 120px;
+  margin: 0 auto;
 }
 
-/* Custom scrollbar for cart items */
-.cart-items {
+.unit-price-field :deep(.v-field__input) {
+  text-align: center;
+}
+
+.additional-field :deep(.v-field__input) {
+  text-align: center;
+}
+
+/* Quantity Controls */
+.quantity-controls {
+  gap: 8px;
+}
+
+/* Table Styling */
+.cart-row {
+  border-bottom: 1px solid rgba(var(--v-theme-on-surface), 0.08);
+}
+
+.cart-row:hover {
+  background-color: rgba(var(--v-theme-primary), 0.04);
+}
+
+/* Table Headers */
+thead th {
+  font-size: 0.75rem;
+  color: rgba(var(--v-theme-on-surface), 0.7) !important;
+  padding: 12px 8px !important;
+  border-bottom: 2px solid rgba(var(--v-theme-on-surface), 0.12) !important;
+}
+
+/* Table Cells */
+tbody td {
+  padding: 12px 8px !important;
+  vertical-align: middle;
+}
+
+/* Custom scrollbar */
+.sale-cart {
   scrollbar-width: thin;
   scrollbar-color: rgba(var(--v-theme-primary), 0.3) transparent;
 }
 
-.cart-items::-webkit-scrollbar {
-  width: 4px;
+.sale-cart::-webkit-scrollbar {
+  width: 6px;
 }
 
-.cart-items::-webkit-scrollbar-track {
+.sale-cart::-webkit-scrollbar-track {
   background: transparent;
 }
 
-.cart-items::-webkit-scrollbar-thumb {
+.sale-cart::-webkit-scrollbar-thumb {
   background: rgba(var(--v-theme-primary), 0.3);
-  border-radius: 2px;
+  border-radius: 3px;
 }
 
-.cart-items::-webkit-scrollbar-thumb:hover {
+.sale-cart::-webkit-scrollbar-thumb:hover {
   background: rgba(var(--v-theme-primary), 0.5);
-}
-
-/* Responsive adjustments */
-@media (max-width: 599px) {
-  .d-flex.align-center.justify-space-between {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 8px;
-  }
 }
 </style>

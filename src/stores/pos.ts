@@ -30,6 +30,7 @@ interface CartItem {
   quantity: number
   total: string
   variable_price?: boolean // If price is editable
+  additional?: string // Additional amount field
 }
 
 interface PaymentItem {
@@ -56,15 +57,25 @@ export const usePOSStore = defineStore('pos', () => {
   // Getters
   const subtotal = computed(() => {
     const sum = cartItems.value.reduce((sum, item) => {
-      return sum + (parseFloat(item.total) || 0)
+      const itemTotal = parseFloat(item.unit_price) * item.quantity
+      return sum + itemTotal
+    }, 0)
+    return sum.toFixed(2)
+  })
+
+  const adjustmentsTotal = computed(() => {
+    const sum = cartItems.value.reduce((sum, item) => {
+      const additional = parseFloat(item.additional || '0')
+      return sum + additional
     }, 0)
     return sum.toFixed(2)
   })
 
   const totalAmount = computed(() => {
     const sub = parseFloat(subtotal.value)
+    const adj = parseFloat(adjustmentsTotal.value)
     const disc = parseFloat(discountAmount.value)
-    return Math.max(0, sub - disc).toFixed(2)
+    return Math.max(0, sub + adj - disc).toFixed(2)
   })
 
   const loyaltyPointsGenerated = computed(() => {
@@ -96,7 +107,8 @@ export const usePOSStore = defineStore('pos', () => {
   const addItem = (item: Omit<CartItem, 'id'>) => {
     const newItem: CartItem = {
       id: `cart_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-      ...item
+      ...item,
+      additional: item.additional || '0' // Initialize additional field
     }
     cartItems.value.push(newItem)
   }
@@ -205,6 +217,7 @@ export const usePOSStore = defineStore('pos', () => {
 
     // Getters
     subtotal,
+    adjustmentsTotal,
     totalAmount,
     loyaltyPointsGenerated,
     totalPaymentAmount,
