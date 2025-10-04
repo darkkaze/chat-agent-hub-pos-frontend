@@ -141,10 +141,16 @@ export const usePOSStore = defineStore('pos', () => {
   }
 
   const updatePaymentMethod = (method: PaymentMethod, amount: string, enabled: boolean) => {
+    console.log('STORE updatePaymentMethod called:', { method, amount, enabled })
     const payment = paymentMethods.value.find(pm => pm.method === method)
+    console.log('Found payment:', payment)
     if (payment) {
       payment.amount = amount
       payment.enabled = enabled
+      console.log('After update:', { payment, allMethods: paymentMethods.value })
+      console.log('Computed totalPaymentAmount:', totalPaymentAmount.value)
+    } else {
+      console.error('Payment method not found:', method)
     }
   }
 

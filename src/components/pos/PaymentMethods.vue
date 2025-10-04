@@ -259,7 +259,8 @@ const updatePayment = (method: string, amount: string | number) => {
   }
 
   // Update store - method is enabled if amount > 0
-  const paymentMethod = method.toUpperCase() as PaymentMethod
+  // Map method name to PaymentMethod enum value (lowercase)
+  const paymentMethod = method as PaymentMethod
   const finalAmount = payments.value[method as keyof typeof payments.value].amount
   const numericAmount = parseFloat(finalAmount || '0')
   const isEnabled = numericAmount > 0
@@ -275,7 +276,7 @@ const updatePayment = (method: string, amount: string | number) => {
   })
   posStore.updatePaymentMethod(paymentMethod, finalAmount, isEnabled)
   console.log('Store state after update:', {
-    paymentMethods: posStore.paymentMethods,
+    paymentMethods: JSON.parse(JSON.stringify(posStore.paymentMethods)),
     totalPaymentAmount: posStore.totalPaymentAmount
   })
 }
