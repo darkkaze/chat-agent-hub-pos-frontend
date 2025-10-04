@@ -26,7 +26,7 @@ Emits: ninguno
               v-model="payments.cash.amount"
               placeholder="0.00"
               prefix="$"
-              variant="plain"
+              variant="underlined"
               density="compact"
               hide-details
               class="payment-input"
@@ -45,7 +45,7 @@ Emits: ninguno
               v-model="payments.card.amount"
               placeholder="0.00"
               prefix="$"
-              variant="plain"
+              variant="underlined"
               density="compact"
               hide-details
               class="payment-input"
@@ -64,7 +64,7 @@ Emits: ninguno
               v-model="payments.transfer.amount"
               placeholder="0.00"
               prefix="$"
-              variant="plain"
+              variant="underlined"
               density="compact"
               hide-details
               class="payment-input"
@@ -83,7 +83,7 @@ Emits: ninguno
               v-model="payments.loyalty_points.amount"
               placeholder="0.00"
               prefix="$"
-              variant="plain"
+              variant="underlined"
               density="compact"
               :hide-details="!isLoyaltyAmountInvalid"
               class="payment-input"
@@ -138,43 +138,24 @@ Emits: ninguno
         class="payment-summary"
       >
         <v-card-text class="pa-3">
-          <!-- Subtotal -->
-          <div class="d-flex justify-space-between align-center mb-2">
-            <span class="text-body-2 text-on-surface-variant">Subtotal</span>
-            <span class="font-weight-medium">${{ subtotal }}</span>
-          </div>
-
-          <!-- Ajustes -->
-          <div class="d-flex justify-space-between align-center mb-2">
-            <span class="text-body-2 text-on-surface-variant">Ajustes</span>
-            <span
-              class="font-weight-medium"
-              :class="adjustmentsAmount >= 0 ? 'text-success' : 'text-error'"
-            >
-              {{ adjustmentsAmount >= 0 ? '+' : '' }}${{ adjustmentsAmount.toFixed(2) }}
-            </span>
-          </div>
-
-          <v-divider class="my-2" />
-
           <!-- Total a Pagar -->
-          <div class="d-flex justify-space-between align-center mb-3">
+          <div class="d-flex justify-space-between align-center mb-2">
             <span class="text-body-1 font-weight-medium">Total a Pagar:</span>
-            <span class="font-weight-bold text-h6 text-primary">${{ totalAmount }}</span>
+            <span class="font-weight-bold text-h6">${{ totalAmount }}</span>
+          </div>
+
+          <!-- Suma -->
+          <div class="d-flex justify-space-between align-center mb-2">
+            <span class="text-body-1 font-weight-medium">Suma:</span>
+            <span class="font-weight-bold text-h6 text-info">${{ totalPaymentAmount }}</span>
           </div>
 
           <v-divider class="my-2" />
 
-          <!-- Total Pagado -->
-          <div class="d-flex justify-space-between align-center mb-2">
-            <span class="text-body-1">Total Pagado:</span>
-            <span class="font-weight-bold text-h6 text-success">${{ totalPaymentAmount }}</span>
-          </div>
-
-          <!-- Diferencia -->
+          <!-- Faltante -->
           <div class="d-flex justify-space-between align-center">
-            <span class="font-weight-bold">Diferencia:</span>
-            <span class="font-weight-bold text-h5" :class="remainingAmount === '0.00' ? 'text-success' : 'text-warning'">
+            <span class="font-weight-bold text-h6">Faltante:</span>
+            <span class="font-weight-bold text-h5" :class="remainingAmount === '0.00' ? 'text-success' : 'text-error'">
               ${{ remainingAmount }}
             </span>
           </div>
@@ -226,14 +207,10 @@ const payments = ref({
 })
 
 // Computed
-const subtotal = computed(() => posStore.subtotal)
-const adjustmentsTotal = computed(() => posStore.adjustmentsTotal)
 const totalAmount = computed(() => posStore.totalAmount)
 const totalPaymentAmount = computed(() => posStore.totalPaymentAmount)
 const isPaymentValid = computed(() => posStore.isPaymentValid)
 const customerLoyaltyPoints = computed(() => customerStore.customerLoyaltyPoints)
-
-const adjustmentsAmount = computed(() => parseFloat(adjustmentsTotal.value))
 
 const canModifyPayments = computed(() => {
   return customerStore.hasCustomer &&
