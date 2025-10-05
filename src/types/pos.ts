@@ -165,33 +165,33 @@ export interface SalesListRequest {
   date?: string
 }
 
-// Webhook Types
-export interface Webhook extends BaseEntity {
+// Signal Types
+export interface Signal extends BaseEntity {
   name: string
   url: string
   is_active: boolean
   auth_config: string // JSON string for auth configuration
 }
 
-export interface WebhookListResponse {
-  webhooks: Webhook[]
+export interface SignalListResponse {
+  signals: Signal[]
 }
 
-export interface CreateWebhookRequest {
+export interface CreateSignalRequest {
   name: string
   url: string
   is_active?: boolean
   auth_config?: string
 }
 
-export interface UpdateWebhookRequest {
+export interface UpdateSignalRequest {
   name?: string
   url?: string
   is_active?: boolean
   auth_config?: string
 }
 
-export interface WebhookTestResponse {
+export interface SignalTestResponse {
   success: boolean
   status_code?: number
   response_body?: string

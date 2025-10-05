@@ -1,7 +1,7 @@
 <!--
-DeleteWebhookDialog Component
+DeleteSignalDialog Component
 
-Dialog de confirmación para eliminar un webhook.
+Dialog de confirmación para eliminar un signal.
 Muestra advertencia antes de eliminar permanentemente.
 -->
 
@@ -15,7 +15,7 @@ Muestra advertencia antes de eliminar permanentemente.
     <v-card elevation="8">
       <v-card-title class="d-flex align-center pa-4 bg-error">
         <v-icon class="me-3 text-white">mdi-alert-circle</v-icon>
-        <span class="text-white font-weight-bold">Eliminar Webhook</span>
+        <span class="text-white font-weight-bold">Eliminar Signal</span>
       </v-card-title>
 
       <v-card-text class="pa-6">
@@ -26,33 +26,33 @@ Muestra advertencia antes de eliminar permanentemente.
         >
           <div class="font-weight-bold mb-2">¿Estás seguro?</div>
           <div class="text-body-2">
-            Esta acción no se puede deshacer. El webhook será eliminado permanentemente
+            Esta acción no se puede deshacer. El signal será eliminado permanentemente
             y dejará de recibir notificaciones de ventas.
           </div>
         </v-alert>
 
-        <div v-if="webhook" class="webhook-info">
+        <div v-if="signal" class="signal-info">
           <v-card variant="outlined" class="pa-3">
             <div class="d-flex flex-column gap-2">
               <div>
                 <span class="text-caption text-grey-darken-1">Nombre:</span>
-                <div class="font-weight-medium">{{ webhook.name }}</div>
+                <div class="font-weight-medium">{{ signal.name }}</div>
               </div>
               <div>
                 <span class="text-caption text-grey-darken-1">URL:</span>
                 <div class="text-caption font-family-monospace text-truncate">
-                  {{ webhook.url }}
+                  {{ signal.url }}
                 </div>
               </div>
               <div>
                 <span class="text-caption text-grey-darken-1">Estado:</span>
                 <v-chip
-                  :color="webhook.is_active ? 'success' : 'grey'"
+                  :color="signal.is_active ? 'success' : 'grey'"
                   size="x-small"
                   variant="flat"
                   class="ml-2"
                 >
-                  {{ webhook.is_active ? 'Activo' : 'Inactivo' }}
+                  {{ signal.is_active ? 'Activo' : 'Inactivo' }}
                 </v-chip>
               </div>
             </div>
@@ -76,7 +76,7 @@ Muestra advertencia antes de eliminar permanentemente.
           @click="handleDelete"
           :loading="loading"
         >
-          Eliminar Webhook
+          Eliminar Signal
         </v-btn>
       </v-card-actions>
     </v-card>
@@ -85,18 +85,18 @@ Muestra advertencia antes de eliminar permanentemente.
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { webhooksService } from '@/services/pos'
-import type { Webhook } from '@/types/pos'
+import { signalsService } from '@/services/pos'
+import type { Signal } from '@/types/pos'
 
 // Props & Emits
 const props = defineProps<{
   modelValue: boolean
-  webhook: Webhook | null
+  signal: Signal | null
 }>()
 
 const emit = defineEmits<{
   'update:modelValue': [value: boolean]
-  'webhook-deleted': []
+  'signal-deleted': []
 }>()
 
 // State
@@ -104,15 +104,15 @@ const loading = ref(false)
 
 // Methods
 const handleDelete = async () => {
-  if (!props.webhook) return
+  if (!props.signal) return
 
   loading.value = true
   try {
-    await webhooksService.deleteWebhook(props.webhook.id)
-    emit('webhook-deleted')
+    await signalsService.deleteSignal(props.signal.id)
+    emit('signal-deleted')
     emit('update:modelValue', false)
   } catch (error) {
-    console.error('Error deleting webhook:', error)
+    console.error('Error deleting signal:', error)
   } finally {
     loading.value = false
   }

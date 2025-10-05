@@ -1,17 +1,17 @@
 <!--
-WebhooksAdminView - Gestión de Webhooks
+SignalsAdminView - Gestión de Signals
 
-Vista de administración de webhooks para notificaciones de ventas.
-Permite crear, editar, eliminar y probar webhooks.
+Vista de administración de signals para notificaciones de ventas.
+Permite crear, editar, eliminar y probar signals.
 -->
 
 <template>
-  <div class="webhooks-admin">
+  <div class="signals-admin">
     <v-card elevation="2">
       <v-card-title class="d-flex align-center justify-space-between pa-4 bg-primary">
         <div class="d-flex align-center">
-          <v-icon class="me-2 text-white">mdi-webhook</v-icon>
-          <span class="text-white font-weight-bold">Webhooks de Notificación</span>
+          <v-icon class="me-2 text-white">mdi-signal</v-icon>
+          <span class="text-white font-weight-bold">Signals de Notificación</span>
         </div>
         <v-btn
           color="white"
@@ -19,7 +19,7 @@ Permite crear, editar, eliminar y probar webhooks.
           prepend-icon="mdi-plus"
           @click="openCreateModal"
         >
-          Nuevo Webhook
+          Nuevo Signal
         </v-btn>
       </v-card-title>
 
@@ -30,15 +30,15 @@ Permite crear, editar, eliminar y probar webhooks.
         </div>
 
         <!-- Empty State -->
-        <div v-else-if="webhooks.length === 0" class="text-center py-8">
-          <v-icon size="64" color="grey-lighten-1">mdi-webhook</v-icon>
-          <p class="text-h6 mt-4 text-grey">No hay webhooks configurados</p>
+        <div v-else-if="signals.length === 0" class="text-center py-8">
+          <v-icon size="64" color="grey-lighten-1">mdi-signal</v-icon>
+          <p class="text-h6 mt-4 text-grey">No hay signals configurados</p>
           <p class="text-body-2 text-grey-darken-1">
-            Crea un webhook para recibir notificaciones cuando se registre una venta
+            Crea un signal para recibir notificaciones cuando se registre una venta
           </p>
         </div>
 
-        <!-- Webhooks Table -->
+        <!-- Signals Table -->
         <v-table v-else>
           <thead>
             <tr>
@@ -51,30 +51,30 @@ Permite crear, editar, eliminar y probar webhooks.
             </tr>
           </thead>
           <tbody>
-            <tr v-for="webhook in webhooks" :key="webhook.id">
-              <td class="font-weight-medium">{{ webhook.name }}</td>
+            <tr v-for="signal in signals" :key="signal.id">
+              <td class="font-weight-medium">{{ signal.name }}</td>
               <td class="text-truncate" style="max-width: 300px;">
-                <span class="text-caption font-family-monospace">{{ webhook.url }}</span>
+                <span class="text-caption font-family-monospace">{{ signal.url }}</span>
               </td>
               <td>
                 <v-chip
-                  :color="webhook.is_active ? 'success' : 'grey'"
+                  :color="signal.is_active ? 'success' : 'grey'"
                   size="small"
                   variant="flat"
                 >
-                  {{ webhook.is_active ? 'Activo' : 'Inactivo' }}
+                  {{ signal.is_active ? 'Activo' : 'Inactivo' }}
                 </v-chip>
               </td>
               <td>
                 <v-icon
-                  :color="hasAuth(webhook) ? 'success' : 'grey-lighten-1'"
+                  :color="hasAuth(signal) ? 'success' : 'grey-lighten-1'"
                   size="small"
                 >
-                  {{ hasAuth(webhook) ? 'mdi-lock' : 'mdi-lock-open-variant-outline' }}
+                  {{ hasAuth(signal) ? 'mdi-lock' : 'mdi-lock-open-variant-outline' }}
                 </v-icon>
               </td>
               <td class="text-caption text-grey-darken-1">
-                {{ formatDate(webhook.created_at) }}
+                {{ formatDate(signal.created_at) }}
               </td>
               <td class="text-right">
                 <v-btn
@@ -82,18 +82,18 @@ Permite crear, editar, eliminar y probar webhooks.
                   size="small"
                   variant="text"
                   color="info"
-                  @click="testWebhook(webhook)"
-                  :loading="testingWebhookId === webhook.id"
+                  @click="testSignal(signal)"
+                  :loading="testingSignalId === signal.id"
                 >
                   <v-icon>mdi-test-tube</v-icon>
-                  <v-tooltip activator="parent">Probar Webhook</v-tooltip>
+                  <v-tooltip activator="parent">Probar Signal</v-tooltip>
                 </v-btn>
                 <v-btn
                   icon="mdi-pencil"
                   size="small"
                   variant="text"
                   color="primary"
-                  @click="openEditModal(webhook)"
+                  @click="openEditModal(signal)"
                 >
                   <v-icon>mdi-pencil</v-icon>
                   <v-tooltip activator="parent">Editar</v-tooltip>
@@ -103,7 +103,7 @@ Permite crear, editar, eliminar y probar webhooks.
                   size="small"
                   variant="text"
                   color="error"
-                  @click="openDeleteDialog(webhook)"
+                  @click="openDeleteDialog(signal)"
                 >
                   <v-icon>mdi-delete</v-icon>
                   <v-tooltip activator="parent">Eliminar</v-tooltip>
@@ -116,21 +116,21 @@ Permite crear, editar, eliminar y probar webhooks.
     </v-card>
 
     <!-- Modals -->
-    <CreateWebhookModal
+    <CreateSignalModal
       v-model="showCreateModal"
-      @webhook-created="handleWebhookCreated"
+      @signal-created="handleSignalCreated"
     />
 
-    <EditWebhookModal
+    <EditSignalModal
       v-model="showEditModal"
-      :webhook="selectedWebhook"
-      @webhook-updated="handleWebhookUpdated"
+      :signal="selectedSignal"
+      @signal-updated="handleSignalUpdated"
     />
 
-    <DeleteWebhookDialog
+    <DeleteSignalDialog
       v-model="showDeleteDialog"
-      :webhook="selectedWebhook"
-      @webhook-deleted="handleWebhookDeleted"
+      :signal="selectedSignal"
+      @signal-deleted="handleSignalDeleted"
     />
 
     <!-- Test Result Snackbar -->
@@ -142,7 +142,7 @@ Permite crear, editar, eliminar y probar webhooks.
     >
       <div class="d-flex flex-column">
         <div class="font-weight-bold mb-1">
-          {{ testResult?.success ? '✓ Webhook Test Exitoso' : '✗ Webhook Test Falló' }}
+          {{ testResult?.success ? '✓ Signal Test Exitoso' : '✗ Signal Test Falló' }}
         </div>
         <div v-if="testResult?.status_code" class="text-caption">
           Status: {{ testResult.status_code }}
@@ -157,31 +157,31 @@ Permite crear, editar, eliminar y probar webhooks.
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { webhooksService } from '@/services/pos'
-import type { Webhook, WebhookTestResponse } from '@/types/pos'
-import CreateWebhookModal from '@/components/admin/CreateWebhookModal.vue'
-import EditWebhookModal from '@/components/admin/EditWebhookModal.vue'
-import DeleteWebhookDialog from '@/components/admin/DeleteWebhookDialog.vue'
+import { signalsService } from '@/services/pos'
+import type { Signal, SignalTestResponse } from '@/types/pos'
+import CreateSignalModal from '@/components/admin/CreateSignalModal.vue'
+import EditSignalModal from '@/components/admin/EditSignalModal.vue'
+import DeleteSignalDialog from '@/components/admin/DeleteSignalDialog.vue'
 
 // State
-const webhooks = ref<Webhook[]>([])
+const signals = ref<Signal[]>([])
 const loading = ref(false)
 const showCreateModal = ref(false)
 const showEditModal = ref(false)
 const showDeleteDialog = ref(false)
-const selectedWebhook = ref<Webhook | null>(null)
-const testingWebhookId = ref<string | null>(null)
+const selectedSignal = ref<Signal | null>(null)
+const testingSignalId = ref<string | null>(null)
 const showTestResult = ref(false)
-const testResult = ref<WebhookTestResponse | null>(null)
+const testResult = ref<SignalTestResponse | null>(null)
 
 // Methods
-const loadWebhooks = async () => {
+const loadSignals = async () => {
   loading.value = true
   try {
-    const response = await webhooksService.getWebhooks()
-    webhooks.value = response.webhooks
+    const response = await signalsService.getSignals()
+    signals.value = response.signals
   } catch (error) {
-    console.error('Error loading webhooks:', error)
+    console.error('Error loading signals:', error)
   } finally {
     loading.value = false
   }
@@ -191,49 +191,49 @@ const openCreateModal = () => {
   showCreateModal.value = true
 }
 
-const openEditModal = (webhook: Webhook) => {
-  selectedWebhook.value = webhook
+const openEditModal = (signal: Signal) => {
+  selectedSignal.value = signal
   showEditModal.value = true
 }
 
-const openDeleteDialog = (webhook: Webhook) => {
-  selectedWebhook.value = webhook
+const openDeleteDialog = (signal: Signal) => {
+  selectedSignal.value = signal
   showDeleteDialog.value = true
 }
 
-const testWebhook = async (webhook: Webhook) => {
-  testingWebhookId.value = webhook.id
+const testSignal = async (signal: Signal) => {
+  testingSignalId.value = signal.id
   try {
-    const result = await webhooksService.testWebhook(webhook.id)
+    const result = await signalsService.testSignal(signal.id)
     testResult.value = result
     showTestResult.value = true
   } catch (error) {
-    console.error('Error testing webhook:', error)
+    console.error('Error testing signal:', error)
     testResult.value = {
       success: false,
-      error: 'Error al ejecutar test del webhook'
+      error: 'Error al ejecutar test del signal'
     }
     showTestResult.value = true
   } finally {
-    testingWebhookId.value = null
+    testingSignalId.value = null
   }
 }
 
-const handleWebhookCreated = () => {
-  loadWebhooks()
+const handleSignalCreated = () => {
+  loadSignals()
 }
 
-const handleWebhookUpdated = () => {
-  loadWebhooks()
+const handleSignalUpdated = () => {
+  loadSignals()
 }
 
-const handleWebhookDeleted = () => {
-  loadWebhooks()
+const handleSignalDeleted = () => {
+  loadSignals()
 }
 
-const hasAuth = (webhook: Webhook): boolean => {
+const hasAuth = (signal: Signal): boolean => {
   try {
-    const authConfig = JSON.parse(webhook.auth_config || '{}')
+    const authConfig = JSON.parse(signal.auth_config || '{}')
     return !!authConfig.type
   } catch {
     return false
@@ -251,12 +251,12 @@ const formatDate = (dateString: string): string => {
 
 // Lifecycle
 onMounted(() => {
-  loadWebhooks()
+  loadSignals()
 })
 </script>
 
 <style scoped>
-.webhooks-admin {
+.signals-admin {
   padding: 16px;
 }
 

@@ -1,8 +1,8 @@
 <!--
-CreateWebhookModal Component
+EditSignalModal Component
 
-Modal para crear un nuevo webhook de notificación de ventas.
-Incluye configuración de URL, estado activo, y autenticación opcional.
+Modal para editar un signal existente.
+Incluye todos los campos editables: nombre, URL, estado y autenticación.
 -->
 
 <template>
@@ -14,17 +14,16 @@ Incluye configuración de URL, estado activo, y autenticación opcional.
   >
     <v-card elevation="8">
       <v-card-title class="d-flex align-center pa-4 bg-primary">
-        <v-icon class="me-3 text-white">mdi-webhook</v-icon>
-        <span class="text-white font-weight-bold">Crear Webhook</span>
+        <v-icon class="me-3 text-white">mdi-signal</v-icon>
+        <span class="text-white font-weight-bold">Editar Signal</span>
       </v-card-title>
 
       <v-form ref="form" @submit.prevent="handleSubmit">
         <v-card-text class="pa-6">
-          <!-- Webhook Name -->
+          <!-- Signal Name -->
           <v-text-field
             v-model="formData.name"
-            label="Nombre del webhook *"
-            placeholder="Ej: Sistema de Inventario, CRM Principal"
+            label="Nombre del signal *"
             prepend-inner-icon="mdi-label"
             variant="outlined"
             density="compact"
@@ -35,11 +34,10 @@ Incluye configuración de URL, estado activo, y autenticación opcional.
             required
           />
 
-          <!-- Webhook URL -->
+          <!-- Signal URL -->
           <v-text-field
             v-model="formData.url"
-            label="URL del webhook *"
-            placeholder="https://example.com/api/webhooks/sales"
+            label="URL del signal *"
             prepend-inner-icon="mdi-link-variant"
             variant="outlined"
             density="compact"
@@ -53,7 +51,7 @@ Incluye configuración de URL, estado activo, y autenticación opcional.
           <v-switch
             v-model="formData.is_active"
             color="success"
-            label="Webhook activo"
+            label="Signal activo"
             messages="Si está desactivado, no se enviarán notificaciones"
             persistent-hint
             class="mb-4"
@@ -67,7 +65,7 @@ Incluye configuración de URL, estado activo, y autenticación opcional.
               <v-expansion-panel-title>
                 <div class="d-flex align-center">
                   <v-icon class="me-2">mdi-lock</v-icon>
-                  <span>Configuración de Autenticación (Opcional)</span>
+                  <span>Configuración de Autenticación</span>
                 </div>
               </v-expansion-panel-title>
               <v-expansion-panel-text>
@@ -87,7 +85,6 @@ Incluye configuración de URL, estado activo, y autenticación opcional.
                   v-if="authConfig.type === 'bearer'"
                   v-model="authConfig.token"
                   label="Bearer Token"
-                  placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
                   prepend-inner-icon="mdi-key"
                   variant="outlined"
                   density="compact"
@@ -109,7 +106,6 @@ Incluye configuración de URL, estado activo, y autenticación opcional.
                   <v-text-field
                     v-model="authConfig.token"
                     label="API Key"
-                    placeholder="sk_live_xxxxxxxxxxxx"
                     prepend-inner-icon="mdi-key"
                     variant="outlined"
                     density="compact"
@@ -159,7 +155,7 @@ Incluye configuración de URL, estado activo, y autenticación opcional.
             type="submit"
             :loading="loading"
           >
-            Crear Webhook
+            Guardar Cambios
           </v-btn>
         </v-card-actions>
       </v-form>
@@ -169,23 +165,24 @@ Incluye configuración de URL, estado activo, y autenticación opcional.
 
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import { webhooksService } from '@/services/pos'
-import type { CreateWebhookRequest } from '@/types/pos'
+import { signalsService } from '@/services/pos'
+import type { Signal, UpdateSignalRequest } from '@/types/pos'
 
 // Props & Emits
 const props = defineProps<{
   modelValue: boolean
+  signal: Signal | null
 }>()
 
 const emit = defineEmits<{
   'update:modelValue': [value: boolean]
-  'webhook-created': []
+  'signal-updated': []
 }>()
 
 // State
 const form = ref()
 const loading = ref(false)
-const formData = ref<CreateWebhookRequest>({
+const formData = ref<UpdateSignalRequest>({
   name: '',
   url: '',
   is_active: true,
@@ -225,7 +222,26 @@ const urlRules = [
 ]
 
 // Methods
+const loadSignal = () => {
+  if (!props.signal) return
+
+  formData.value = {
+    name: props.signal.name,
+    url: props.signal.url,
+    is_active: props.signal.is_active,
+    auth_config: props.signal.auth_config
+  }
+
+  try {
+    authConfig.value = JSON.parse(props.signal.auth_config || '{}')
+  } catch {
+    authConfig.value = {}
+  }
+}
+
 const handleSubmit = async () => {
+  if (!props.signal) return
+
   const { valid } = await form.value.validate()
   if (!valid) return
 
@@ -234,16 +250,15 @@ const handleSubmit = async () => {
     // Build auth_config JSON
     const auth = authConfig.value.type ? JSON.stringify(authConfig.value) : '{}'
 
-    await webhooksService.createWebhook({
+    await signalsService.updateSignal(props.signal.id, {
       ...formData.value,
       auth_config: auth
     })
 
-    emit('webhook-created')
+    emit('signal-updated')
     emit('update:modelValue', false)
-    resetForm()
   } catch (error) {
-    console.error('Error creating webhook:', error)
+    console.error('Error updating signal:', error)
   } finally {
     loading.value = false
   }
@@ -251,24 +266,18 @@ const handleSubmit = async () => {
 
 const handleCancel = () => {
   emit('update:modelValue', false)
-  resetForm()
 }
 
-const resetForm = () => {
-  formData.value = {
-    name: '',
-    url: '',
-    is_active: true,
-    auth_config: '{}'
+// Watch for signal changes
+watch(() => props.signal, () => {
+  if (props.signal) {
+    loadSignal()
   }
-  authConfig.value = {}
-  form.value?.reset()
-}
+}, { immediate: true })
 
-// Watch for modal close to reset
 watch(() => props.modelValue, (newVal) => {
-  if (!newVal) {
-    resetForm()
+  if (newVal && props.signal) {
+    loadSignal()
   }
 })
 </script>

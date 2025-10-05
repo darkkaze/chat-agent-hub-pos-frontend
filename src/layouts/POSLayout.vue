@@ -46,10 +46,10 @@ Emits: ninguno
           Tickets
         </v-tab>
         <v-tab
-          value="webhooks"
-          prepend-icon="mdi-webhook"
+          value="signals"
+          prepend-icon="mdi-signal"
         >
-          Webhooks
+          Signals
         </v-tab>
         <v-tab
           value="sale"
@@ -121,8 +121,8 @@ watch(
       currentTab.value = 'products'
     } else if (newPath === '/tickets') {
       currentTab.value = 'tickets'
-    } else if (newPath === '/webhooks') {
-      currentTab.value = 'webhooks'
+    } else if (newPath === '/signals') {
+      currentTab.value = 'signals'
     }
   },
   { immediate: true }
@@ -136,8 +136,8 @@ watch(currentTab, (newTab) => {
     router.push('/productos')
   } else if (newTab === 'tickets' && route.path !== '/tickets') {
     router.push('/tickets')
-  } else if (newTab === 'webhooks' && route.path !== '/webhooks') {
-    router.push('/webhooks')
+  } else if (newTab === 'signals' && route.path !== '/signals') {
+    router.push('/signals')
   }
 })
 </script>
