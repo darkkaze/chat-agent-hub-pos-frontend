@@ -291,7 +291,10 @@ const handleProcessSale = async () => {
 
   try {
     const sale = await posStore.processSale(customerStore.currentCustomer.id, staffStore.currentStaff.id)
-    await customerStore.refreshCurrentCustomer()
+    // Update customer with data from sale response (includes updated loyalty points)
+    if (sale.customer) {
+      customerStore.setCurrentCustomer(sale.customer)
+    }
     emit('saleCompleted', sale)
   } catch (error) {
     console.error('Error processing sale:', error)
