@@ -3,6 +3,7 @@ import POSLayout from '@/layouts/POSLayout.vue'
 import POSPage from '@/views/POSPage.vue'
 import ProductsAdminView from '@/views/ProductsAdminView.vue'
 import SalesHistoryView from '@/views/SalesHistoryView.vue'
+import WebhooksAdminView from '@/views/WebhooksAdminView.vue'
 import { useAuthStore } from '@/stores/auth'
 
 const router = createRouter({
@@ -38,6 +39,14 @@ const router = createRouter({
           component: SalesHistoryView,
           meta: {
             title: 'Historial de Ventas'
+          }
+        },
+        {
+          path: 'webhooks',
+          name: 'webhooks-admin',
+          component: WebhooksAdminView,
+          meta: {
+            title: 'Gestión de Webhooks'
           }
         }
       ]

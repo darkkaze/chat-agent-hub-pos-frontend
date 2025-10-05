@@ -164,3 +164,36 @@ export interface SalesListRequest {
   search?: string
   date?: string
 }
+
+// Webhook Types
+export interface Webhook extends BaseEntity {
+  name: string
+  url: string
+  is_active: boolean
+  auth_config: string // JSON string for auth configuration
+}
+
+export interface WebhookListResponse {
+  webhooks: Webhook[]
+}
+
+export interface CreateWebhookRequest {
+  name: string
+  url: string
+  is_active?: boolean
+  auth_config?: string
+}
+
+export interface UpdateWebhookRequest {
+  name?: string
+  url?: string
+  is_active?: boolean
+  auth_config?: string
+}
+
+export interface WebhookTestResponse {
+  success: boolean
+  status_code?: number
+  response_body?: string
+  error?: string
+}
