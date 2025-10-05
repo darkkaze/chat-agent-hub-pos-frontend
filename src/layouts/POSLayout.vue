@@ -57,23 +57,8 @@ Emits: ninguno
     <!-- Main Content Area -->
     <v-main class="main-content">
       <v-container fluid class="pa-0 h-100">
-        <!-- Tab Content -->
-        <v-window v-model="currentTab" class="h-100">
-          <!-- Products Tab -->
-          <v-window-item value="products" class="h-100">
-            <router-view />
-          </v-window-item>
-
-          <!-- Tickets Tab -->
-          <v-window-item value="tickets" class="h-100">
-            <router-view />
-          </v-window-item>
-
-          <!-- Sale Tab (Main POS) -->
-          <v-window-item value="sale" class="h-100">
-            <router-view />
-          </v-window-item>
-        </v-window>
+        <!-- Router View - displays component based on current route -->
+        <router-view />
       </v-container>
     </v-main>
 
@@ -124,11 +109,11 @@ watch(
   () => route.path,
   (newPath) => {
     // Update tab based on route path
-    if (newPath === '/pos/sale') {
+    if (newPath === '/sale' || newPath === '/') {
       currentTab.value = 'sale'
-    } else if (newPath === '/pos/productos') {
+    } else if (newPath === '/productos') {
       currentTab.value = 'products'
-    } else if (newPath === '/pos/tickets') {
+    } else if (newPath === '/tickets') {
       currentTab.value = 'tickets'
     }
   },
@@ -137,12 +122,12 @@ watch(
 
 // Watch for tab changes to update route
 watch(currentTab, (newTab) => {
-  if (newTab === 'sale' && route.path !== '/pos/sale') {
-    router.push('/pos/sale')
-  } else if (newTab === 'products' && route.path !== '/pos/productos') {
-    router.push('/pos/productos')
-  } else if (newTab === 'tickets' && route.path !== '/pos/tickets') {
-    router.push('/pos/tickets')
+  if (newTab === 'sale' && route.path !== '/sale') {
+    router.push('/sale')
+  } else if (newTab === 'products' && route.path !== '/productos') {
+    router.push('/productos')
+  } else if (newTab === 'tickets' && route.path !== '/tickets') {
+    router.push('/tickets')
   }
 })
 </script>
@@ -151,15 +136,6 @@ watch(currentTab, (newTab) => {
 /* Main content container - allow natural scroll */
 .main-content {
   min-height: 100vh;
-}
-
-/* Ensure full height for tab content */
-.v-window {
-  height: 100%;
-}
-
-.v-window-item {
-  height: 100%;
 }
 
 /* Custom app bar styling */
