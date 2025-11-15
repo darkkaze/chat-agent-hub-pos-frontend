@@ -100,7 +100,6 @@ Ruta: /tickets
           class="sales-table h-100"
           density="compact"
           hide-default-footer
-          @click:row="openSaleDetails"
         >
           <!-- Sale ID column -->
           <template #[`item.id`]="{ item }">

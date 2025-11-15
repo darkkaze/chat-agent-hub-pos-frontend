@@ -124,6 +124,37 @@ Emits:
                 </v-card>
               </v-col>
             </v-row>
+
+            <!-- Staff/Vendor Info -->
+            <v-row v-if="sale.staff" class="mt-3">
+              <v-col cols="12" md="6">
+                <v-card variant="outlined" class="h-100">
+                  <v-card-text class="pa-4">
+                    <div class="d-flex align-center mb-3">
+                      <v-icon color="info" class="me-2">mdi-account-tie</v-icon>
+                      <span class="font-weight-bold">Vendedor</span>
+                    </div>
+
+                    <div class="d-flex align-center">
+                      <v-avatar color="info" size="large" class="me-3">
+                        <v-icon color="white">mdi-account-tie</v-icon>
+                      </v-avatar>
+                      <div>
+                        <div class="font-weight-medium text-h6">
+                          {{ sale.staff.name }}
+                        </div>
+                        <div v-if="sale.staff.is_active" class="text-body-2 text-success">
+                          Activo
+                        </div>
+                        <div v-else class="text-body-2 text-error">
+                          Inactivo
+                        </div>
+                      </div>
+                    </div>
+                  </v-card-text>
+                </v-card>
+              </v-col>
+            </v-row>
           </div>
 
           <!-- Sale Items -->
