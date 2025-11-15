@@ -353,9 +353,20 @@ const debouncedSearch = () => {
   }, 500)
 }
 
-const openSaleDetails = (sale: Sale) => {
-  selectedSale.value = sale
-  showDetailsModal.value = true
+const openSaleDetails = async (sale: Sale) => {
+  // Fetch complete sale details from API
+  try {
+    isLoading.value = true
+    const fullSale = await salesService.getSale(sale.id)
+    selectedSale.value = fullSale
+    showDetailsModal.value = true
+  } catch (err: unknown) {
+    error.value = err instanceof Error ? err.message : 'Error al cargar detalles de la venta'
+    console.error('Error loading sale details:', err)
+    showNotification('Error al cargar detalles de la venta', 'error')
+  } finally {
+    isLoading.value = false
+  }
 }
 
 const getItemsCount = (itemsJson: any): number => {
