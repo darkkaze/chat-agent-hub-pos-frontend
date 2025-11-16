@@ -310,7 +310,19 @@ const updatePayment = (method: string, amount: string | number) => {
   })
 }
 
-// No auto-fill logic - user controls all inputs manually
+// Reset payment methods when cart is cleared (new sale started)
+watch(() => posStore.cartItems.length, (newLength) => {
+  if (newLength === 0) {
+    // Reset local payment state when cart is empty (new sale)
+    payments.value = {
+      cash: { amount: '' },
+      card: { amount: '' },
+      transfer: { amount: '' },
+      loyalty_points: { amount: '' },
+      tip: { amount: '' }
+    }
+  }
+})
 
 // Sale processing method
 const handleProcessSale = async () => {
