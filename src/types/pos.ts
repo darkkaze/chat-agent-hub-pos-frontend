@@ -88,7 +88,7 @@ export interface CreateProductRequest {
   name: string
   description?: string
   details?: string
-  price: number
+  price: string | number
   variable_price?: boolean
   category?: string
   meta_data?: string
@@ -98,7 +98,7 @@ export interface UpdateProductRequest {
   name?: string
   description?: string
   details?: string
-  price?: number
+  price?: string | number
   variable_price?: boolean
   category?: string
   meta_data?: string
