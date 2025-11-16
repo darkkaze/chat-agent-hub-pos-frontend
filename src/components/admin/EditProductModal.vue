@@ -249,10 +249,10 @@ const descriptionRules = [
 ]
 
 const priceRules = [
-  (v: string) => !!v || 'El precio es requerido',
-  (v: string) => !isNaN(parseFloat(v)) || 'Ingresa un precio válido',
-  (v: string) => parseFloat(v) >= 0 || 'El precio debe ser mayor o igual a 0',
-  (v: string) => parseFloat(v) <= 999999.99 || 'El precio es demasiado alto'
+  (v: string | number) => !!v || 'El precio es requerido',
+  (v: string | number) => !isNaN(parseFloat(String(v))) || 'Ingresa un precio válido',
+  (v: string | number) => parseFloat(String(v)) >= 0 || 'El precio debe ser mayor o igual a 0',
+  (v: string | number) => parseFloat(String(v)) <= 999999.99 || 'El precio es demasiado alto'
 ]
 
 // Error messages
@@ -266,7 +266,7 @@ const isFormValid = computed(() => {
   const description = formData.value.description
 
   const nameValid = name && name.length >= 2 && name.length <= 100
-  const priceValid = !isNaN(parseFloat(price || '0')) && parseFloat(price || '0') >= 0 && parseFloat(price || '0') <= 999999.99
+  const priceValid = !isNaN(parseFloat(String(price) || '0')) && parseFloat(String(price) || '0') >= 0 && parseFloat(String(price) || '0') <= 999999.99
   const descriptionValid = !description || description.length <= 500
 
   return nameValid && priceValid && descriptionValid
