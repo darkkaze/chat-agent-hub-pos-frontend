@@ -43,6 +43,11 @@ export const useGlobalsStore = defineStore('globals', () => {
       const data = await response.json() as GlobalsConfig
       console.log('API response received:', data)
 
+      // Load project name from POS backend
+      if (data.frontend_project_name !== undefined) {
+        projectName.value = data.frontend_project_name
+      }
+
       // Load loyalty points rate from POS backend
       if (data.loyalty_points_rate !== undefined) {
         loyaltyPointsRate.value = data.loyalty_points_rate
@@ -51,10 +56,11 @@ export const useGlobalsStore = defineStore('globals', () => {
       // Update document title immediately
       document.title = browserTitle.value
 
-      console.log('Globals loaded:', { loyaltyPointsRate: loyaltyPointsRate.value })
+      console.log('Globals loaded:', { projectName: projectName.value, loyaltyPointsRate: loyaltyPointsRate.value })
 
       // Save to localStorage for persistence
       localStorage.setItem('posGlobalsLoaded', JSON.stringify({
+        projectName: projectName.value,
         loyaltyPointsRate: loyaltyPointsRate.value
       }))
 
@@ -67,6 +73,7 @@ export const useGlobalsStore = defineStore('globals', () => {
         const saved = localStorage.getItem('posGlobalsLoaded')
         if (saved) {
           const data = JSON.parse(saved)
+          projectName.value = data.projectName || 'Agent Hub'
           loyaltyPointsRate.value = data.loyaltyPointsRate || 0.05
         }
       } catch (storageError) {
