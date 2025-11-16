@@ -268,7 +268,7 @@ const handleSubmit = async () => {
       name: formData.value.name.trim(),
       description: formData.value.description?.trim() || undefined,
       details: formData.value.details?.trim() || undefined,
-      price: parseFloat(formData.value.price).toFixed(2),
+      price: parseFloat(formData.value.price),
       variable_price: formData.value.variable_price || false,
       category: formData.value.category?.trim() || undefined,
       meta_data: Object.keys(metadata).length > 0 ? JSON.stringify(metadata) : '{}'

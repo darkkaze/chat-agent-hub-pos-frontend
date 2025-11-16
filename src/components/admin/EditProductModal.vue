@@ -308,7 +308,7 @@ const handleSubmit = async () => {
       updateData.details = formData.value.details?.trim() || undefined
     }
     if (formData.value.price !== originalData.value.price) {
-      updateData.price = parseFloat(formData.value.price || '0').toFixed(2)
+      updateData.price = parseFloat(formData.value.price || '0')
     }
     if (formData.value.variable_price !== originalData.value.variable_price) {
       updateData.variable_price = formData.value.variable_price
