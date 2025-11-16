@@ -29,11 +29,19 @@ export const useGlobalsStore = defineStore('globals', () => {
 
     console.log('Starting to fetch globals...')
     try {
-      // Note: apiService.baseURL already includes '/pos/api', so use '/globals'
-      console.log('Making API call to /globals')
-      const response = await apiService.get<GlobalsConfig>('/globals')
-      console.log('API response received:', response)
-      projectName.value = response.frontend_project_name || 'Agent Hub'
+      // Globals endpoint is in the main API (/api), not in /pos/api
+      // So we need to call the full URL path
+      const globalsUrl = `${location.protocol}//${location.host}/api/globals`
+      console.log('Making API call to', globalsUrl)
+      const response = await fetch(globalsUrl)
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+
+      const data = await response.json() as GlobalsConfig
+      console.log('API response received:', data)
+      projectName.value = data.frontend_project_name || 'Agent Hub'
 
       // Update document title immediately
       document.title = browserTitle.value
