@@ -128,14 +128,24 @@ Emits:
           />
 
           <!-- Active Status -->
-          <v-switch
-            v-model="formData.is_active"
-            color="primary"
-            label="Producto activo"
-            :messages="formData.is_active ? 'El producto estará disponible para venta' : 'El producto estará oculto en el POS'"
-            persistent-hint
-            class="mb-2"
-          />
+          <div class="d-flex align-center gap-3 mb-2">
+            <v-switch
+              v-model="formData.is_active"
+              :color="formData.is_active ? 'success' : 'error'"
+              hide-details
+            />
+            <div class="d-flex align-center gap-2">
+              <v-icon :color="formData.is_active ? 'success' : 'error'">
+                {{ formData.is_active ? 'mdi-eye' : 'mdi-eye-off' }}
+              </v-icon>
+              <div>
+                <div class="font-weight-medium">{{ formData.is_active ? 'Producto visible' : 'Producto oculto' }}</div>
+                <div class="text-caption text-medium-emphasis">
+                  {{ formData.is_active ? 'Disponible para venta' : 'No disponible en el POS' }}
+                </div>
+              </div>
+            </div>
+          </div>
 
           <!-- Helper Info -->
           <v-alert
