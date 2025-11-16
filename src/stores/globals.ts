@@ -10,12 +10,14 @@ import { ref, computed } from 'vue'
 import { apiService } from '@/services/api'
 
 interface GlobalsConfig {
-  frontend_project_name: string
+  frontend_project_name?: string
+  loyalty_points_rate?: number
 }
 
 export const useGlobalsStore = defineStore('globals', () => {
   // State
   const projectName = ref<string>('Agent Hub')
+  const loyaltyPointsRate = ref<number>(0.05) // 5% default rate
   const isLoaded = ref(false)
 
   // Getters
@@ -29,9 +31,8 @@ export const useGlobalsStore = defineStore('globals', () => {
 
     console.log('Starting to fetch globals...')
     try {
-      // Globals endpoint is in the main API (/api), not in /pos/api
-      // So we need to call the full URL path
-      const globalsUrl = `${location.protocol}//${location.host}/api/globals`
+      // Fetch from POS API globals endpoint
+      const globalsUrl = `${location.protocol}//${location.host}/pos/api/globals`
       console.log('Making API call to', globalsUrl)
       const response = await fetch(globalsUrl)
 
@@ -41,19 +42,36 @@ export const useGlobalsStore = defineStore('globals', () => {
 
       const data = await response.json() as GlobalsConfig
       console.log('API response received:', data)
-      projectName.value = data.frontend_project_name || 'Agent Hub'
+
+      // Load loyalty points rate from POS backend
+      if (data.loyalty_points_rate !== undefined) {
+        loyaltyPointsRate.value = data.loyalty_points_rate
+      }
 
       // Update document title immediately
       document.title = browserTitle.value
 
-      console.log('Globals loaded:', { projectName: projectName.value })
+      console.log('Globals loaded:', { loyaltyPointsRate: loyaltyPointsRate.value })
+
+      // Save to localStorage for persistence
+      localStorage.setItem('posGlobalsLoaded', JSON.stringify({
+        loyaltyPointsRate: loyaltyPointsRate.value
+      }))
 
       // Only mark as loaded if the call was successful
       isLoaded.value = true
     } catch (error) {
       console.error('Failed to load globals:', error)
-      // Use default value but DON'T mark as loaded so it retries
-      projectName.value = 'Agent Hub'
+      // Try to restore from localStorage
+      try {
+        const saved = localStorage.getItem('posGlobalsLoaded')
+        if (saved) {
+          const data = JSON.parse(saved)
+          loyaltyPointsRate.value = data.loyaltyPointsRate || 0.05
+        }
+      } catch (storageError) {
+        console.error('Failed to restore from localStorage:', storageError)
+      }
       // isLoaded remains false, so it will retry on next call
     }
     console.log('loadGlobals finished')
@@ -62,6 +80,7 @@ export const useGlobalsStore = defineStore('globals', () => {
   return {
     // State
     projectName: computed(() => projectName.value),
+    loyaltyPointsRate: computed(() => loyaltyPointsRate.value),
     isLoaded: computed(() => isLoaded.value),
 
     // Getters

@@ -11,6 +11,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { useCustomerStore } from './customer'
+import { useGlobalsStore } from './globals'
 import type {
   SaleItem,
   PaymentMethodItem,
@@ -40,8 +41,10 @@ interface PaymentItem {
 }
 
 export const usePOSStore = defineStore('pos', () => {
-  // Get customer store reference
+  // Get store references
   const customerStore = useCustomerStore()
+  const globalsStore = useGlobalsStore()
+
   // State
   const cartItems = ref<CartItem[]>([])
   const paymentMethods = ref<PaymentItem[]>([
@@ -52,7 +55,6 @@ export const usePOSStore = defineStore('pos', () => {
   ])
   const discountAmount = ref<string>('0.00')
   const tipAmount = ref<string>('0.00')
-  const loyaltyPointsRate = ref<number>(0.10) // 10% default rate
   const isProcessingSale = ref<boolean>(false)
 
   // Getters
@@ -84,7 +86,7 @@ export const usePOSStore = defineStore('pos', () => {
     const moneyPaid = paymentMethods.value
       .filter(pm => pm.enabled && pm.method !== PaymentMethod.LOYALTY_POINTS)
       .reduce((sum, pm) => sum + (parseFloat(pm.amount) || 0), 0)
-    return Math.floor(moneyPaid * loyaltyPointsRate.value)
+    return Math.floor(moneyPaid * globalsStore.loyaltyPointsRate)
   })
 
   const totalPaymentAmount = computed(() => {
@@ -239,7 +241,6 @@ export const usePOSStore = defineStore('pos', () => {
     paymentMethods: computed(() => paymentMethods.value),
     discountAmount: computed(() => discountAmount.value),
     tipAmount: computed(() => tipAmount.value),
-    loyaltyPointsRate: computed(() => loyaltyPointsRate.value),
     isProcessingSale: computed(() => isProcessingSale.value),
 
     // Getters
