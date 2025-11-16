@@ -264,11 +264,13 @@ const handleSubmit = async () => {
       metadata.duration_minutes = formData.value.duration_minutes
     }
 
+    const price = parseFloat(String(formData.value.price)) as string | number
+
     const productData: CreateProductRequest = {
       name: formData.value.name.trim(),
       description: formData.value.description?.trim() || undefined,
       details: formData.value.details?.trim() || undefined,
-      price: parseFloat(formData.value.price),
+      price,
       variable_price: formData.value.variable_price || false,
       category: formData.value.category?.trim() || undefined,
       meta_data: Object.keys(metadata).length > 0 ? JSON.stringify(metadata) : '{}'
@@ -320,9 +322,9 @@ const resetForm = () => {
 
 // Format price on blur
 const formatPrice = () => {
-  const price = parseFloat(formData.value.price)
-  if (!isNaN(price)) {
-    formData.value.price = price.toFixed(2)
+  const parsedPrice = parseFloat(formData.value as any)
+  if (!isNaN(parsedPrice)) {
+    formData.value.price = parsedPrice.toFixed(2)
   }
 }
 
