@@ -21,7 +21,7 @@ Emits: ninguno
     >
       <v-app-bar-title class="text-h6 font-weight-bold text-primary">
         <v-icon size="28" class="me-2">mdi-cash-register</v-icon>
-        POS - Agent Hub
+        POS - {{ globalsStore.sidebarTitle }}
       </v-app-bar-title>
 
       <v-spacer />
@@ -105,11 +105,13 @@ import { ref, computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { usePOSStore } from '@/stores/pos'
 import { useAuthStore } from '@/stores/auth'
+import { useGlobalsStore } from '@/stores/globals'
 
 const route = useRoute()
 const router = useRouter()
 const posStore = usePOSStore()
 const authStore = useAuthStore()
+const globalsStore = useGlobalsStore()
 
 // Reactive state
 const currentTab = ref<string>('sale')

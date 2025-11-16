@@ -9,6 +9,7 @@ Simplemente renderiza el RouterView para mostrar las vistas correspondientes.
 import { RouterView } from 'vue-router'
 import { onMounted } from 'vue'
 import { apiService } from '@/services/api'
+import { useGlobalsStore } from '@/stores/globals'
 
 // Initialize API service with token from localStorage on app start
 onMounted(() => {
@@ -18,6 +19,10 @@ onMounted(() => {
   } else {
     console.log('POS App initialized - no token found')
   }
+
+  // Load global configuration (project name, etc.)
+  const globalsStore = useGlobalsStore()
+  globalsStore.loadGlobals()
 })
 </script>
 
