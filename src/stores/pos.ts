@@ -51,6 +51,7 @@ export const usePOSStore = defineStore('pos', () => {
     { method: PaymentMethod.LOYALTY_POINTS, amount: '0.00', enabled: false }
   ])
   const discountAmount = ref<string>('0.00')
+  const tipAmount = ref<string>('0.00')
   const loyaltyPointsRate = ref<number>(0.10) // 10% default rate
   const isProcessingSale = ref<boolean>(false)
 
@@ -79,8 +80,11 @@ export const usePOSStore = defineStore('pos', () => {
   })
 
   const loyaltyPointsGenerated = computed(() => {
-    const total = parseFloat(totalAmount.value)
-    return Math.floor(total * loyaltyPointsRate.value)
+    // Calculate loyalty points only on money payments (not loyalty_points payments)
+    const moneyPaid = paymentMethods.value
+      .filter(pm => pm.enabled && pm.method !== PaymentMethod.LOYALTY_POINTS)
+      .reduce((sum, pm) => sum + (parseFloat(pm.amount) || 0), 0)
+    return Math.floor(moneyPaid * loyaltyPointsRate.value)
   })
 
   const totalPaymentAmount = computed(() => {
@@ -154,6 +158,10 @@ export const usePOSStore = defineStore('pos', () => {
     }
   }
 
+  const updateTipAmount = (amount: string) => {
+    tipAmount.value = amount
+  }
+
   const clearCart = () => {
     cartItems.value = []
     paymentMethods.value.forEach(pm => {
@@ -161,6 +169,7 @@ export const usePOSStore = defineStore('pos', () => {
       pm.enabled = false
     })
     discountAmount.value = '0.00'
+    tipAmount.value = '0.00'
   }
 
   const processSale = async (customerId: string, staffId: string) => {
@@ -206,7 +215,8 @@ export const usePOSStore = defineStore('pos', () => {
         discount_amount: discountAmount.value,
         total_amount: totalAmount.value,
         loyalty_points_generated: loyaltyPointsGenerated.value,
-        payment_methods: salePaymentMethods
+        payment_methods: salePaymentMethods,
+        tip_amount: tipAmount.value
       }
 
       console.log('Creating sale with payload:', JSON.stringify(salePayload, null, 2))
@@ -228,6 +238,7 @@ export const usePOSStore = defineStore('pos', () => {
     cartItems: computed(() => cartItems.value),
     paymentMethods: computed(() => paymentMethods.value),
     discountAmount: computed(() => discountAmount.value),
+    tipAmount: computed(() => tipAmount.value),
     loyaltyPointsRate: computed(() => loyaltyPointsRate.value),
     isProcessingSale: computed(() => isProcessingSale.value),
 
@@ -246,6 +257,7 @@ export const usePOSStore = defineStore('pos', () => {
     updateItemQuantity,
     updateItemPrice,
     updatePaymentMethod,
+    updateTipAmount,
     clearCart,
     processSale
   }

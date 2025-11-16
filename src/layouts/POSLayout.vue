@@ -33,24 +33,29 @@ Emits: ninguno
         align-tabs="end"
         density="compact"
       >
+        <!-- Admin-only tabs -->
         <v-tab
+          v-if="isAdmin"
           value="products"
           prepend-icon="mdi-package-variant"
         >
           Productos
         </v-tab>
         <v-tab
+          v-if="isAdmin"
           value="tickets"
           prepend-icon="mdi-receipt"
         >
           Tickets
         </v-tab>
         <v-tab
+          v-if="isAdmin"
           value="signals"
           prepend-icon="mdi-signal"
         >
           Signals
         </v-tab>
+        <!-- Available for all users -->
         <v-tab
           value="sale"
           prepend-icon="mdi-home"
@@ -99,16 +104,21 @@ Emits: ninguno
 import { ref, computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { usePOSStore } from '@/stores/pos'
+import { useAuthStore } from '@/stores/auth'
 
 const route = useRoute()
 const router = useRouter()
 const posStore = usePOSStore()
+const authStore = useAuthStore()
 
 // Reactive state
 const currentTab = ref<string>('sale')
 
 // Show global loading when processing sale
 const showGlobalLoading = computed(() => posStore.isProcessingSale)
+
+// Check if user is admin (can access all tabs)
+const isAdmin = computed(() => authStore.isAdmin)
 
 // Watch for route changes to update tab
 watch(

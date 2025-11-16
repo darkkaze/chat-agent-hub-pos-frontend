@@ -101,6 +101,28 @@ Emits: ninguno
           </div>
         </div>
 
+        <!-- Tip -->
+        <div class="payment-method mb-3">
+          <div class="d-flex align-center gap-2">
+            <v-icon color="accent">mdi-gift-outline</v-icon>
+            <span class="payment-label">Propina</span>
+            <v-text-field
+              v-model="payments.tip.amount"
+              placeholder="0.00"
+              prefix="$"
+              variant="outlined"
+              density="compact"
+              hide-details
+              class="payment-input"
+              :disabled="!canModifyPayments"
+              @update:model-value="updatePayment('tip', $event)"
+            />
+          </div>
+          <div class="text-caption text-on-surface-variant ps-9 mt-1">
+            No suma al total ni genera puntos
+          </div>
+        </div>
+
         <!-- Staff Selection -->
         <div class="staff-selection mb-3">
           <div class="d-flex align-center gap-2 mb-1">
@@ -203,7 +225,8 @@ const payments = ref({
   cash: { amount: '' },
   card: { amount: '' },
   transfer: { amount: '' },
-  loyalty_points: { amount: '' }
+  loyalty_points: { amount: '' },
+  tip: { amount: '' }
 })
 
 // Computed
@@ -251,6 +274,12 @@ const updatePayment = (method: string, amount: string | number) => {
 
   // Keep the value as-is while typing (don't format)
   payments.value[method as keyof typeof payments.value].amount = strAmount
+
+  // Handle tip separately - doesn't affect payment methods
+  if (method === 'tip') {
+    posStore.updateTipAmount(strAmount)
+    return
+  }
 
   // Validate loyalty points limit
   const numAmount = parseFloat(strAmount) || 0

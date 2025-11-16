@@ -22,7 +22,8 @@ const router = createRouter({
           name: 'pos-sale',
           component: POSPage,
           meta: {
-            title: 'Punto de Venta'
+            title: 'Punto de Venta',
+            requiresAuth: true // Available to all authenticated users
           }
         },
         {
@@ -30,7 +31,9 @@ const router = createRouter({
           name: 'products-admin',
           component: ProductsAdminView,
           meta: {
-            title: 'Gestión de Productos'
+            title: 'Gestión de Productos',
+            requiresAuth: true,
+            requiresAdmin: true // Only for ADMIN users
           }
         },
         {
@@ -38,7 +41,9 @@ const router = createRouter({
           name: 'sales-history',
           component: SalesHistoryView,
           meta: {
-            title: 'Historial de Ventas'
+            title: 'Historial de Ventas',
+            requiresAuth: true,
+            requiresAdmin: true // Only for ADMIN users
           }
         },
         {
@@ -46,7 +51,9 @@ const router = createRouter({
           name: 'signals-admin',
           component: SignalsAdminView,
           meta: {
-            title: 'Gestión de Signals'
+            title: 'Gestión de Signals',
+            requiresAuth: true,
+            requiresAdmin: true // Only for ADMIN users
           }
         }
       ]
@@ -59,7 +66,7 @@ const router = createRouter({
   ],
 })
 
-// Navigation guards with simple authentication
+// Navigation guards with authentication and authorization
 router.beforeEach((to, from, next) => {
   // Set page title
   if (to.meta?.title) {
@@ -85,8 +92,15 @@ router.beforeEach((to, from, next) => {
     return
   }
 
-  // Token exists, continue navigation
-  // Backend will validate token in actual API calls
+  // Token exists, check role-based access
+  if (to.meta?.requiresAdmin && !authStore.isAdmin) {
+    // User doesn't have admin role, redirect to sale view
+    console.log(`Access denied to ${to.path}: User role is ${authStore.userRole}, ADMIN required. Redirecting to /sale`)
+    next('/sale')
+    return
+  }
+
+  // User is authenticated and authorized
   next()
 })
 
