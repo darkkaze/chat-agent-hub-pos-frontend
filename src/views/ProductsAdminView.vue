@@ -151,10 +151,10 @@ Ruta: /products
               @click="openEditModal(item)"
             />
             <v-btn
-              :icon="item.is_active ? 'mdi-archive' : 'mdi-archive-arrow-up'"
+              :icon="item.is_active ? 'mdi-eye' : 'mdi-eye-off'"
               variant="text"
               size="small"
-              :color="item.is_active ? 'warning' : 'success'"
+              :color="item.is_active ? 'success' : 'error'"
               @click="toggleProductStatus(item)"
             />
             <v-btn
