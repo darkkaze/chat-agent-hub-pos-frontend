@@ -63,7 +63,7 @@ export class SalesService {
    * Obtener reporte de ventas filtrado por fecha y staff
    */
   async getSalesReport(params: SalesReportRequest): Promise<SalesReportResponse> {
-    const queryParams = buildQueryParams(params)
+    const queryParams = buildQueryParams(params as unknown as Record<string, unknown>)
     return apiService.get<SalesReportResponse>(`/reports/sales/${queryParams}`)
   }
 }

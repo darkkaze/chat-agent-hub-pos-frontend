@@ -134,6 +134,7 @@ export interface Sale extends BaseEntity {
   total_amount: string // Decimal as string
   loyalty_points_generated?: number
   payment_methods: PaymentMethodItem[]
+  tip_amount?: string // Decimal as string
   delivered_at?: string | null // Delivery timestamp (ISO 8601) or null if not delivered
   customer: Customer
   staff: Staff

@@ -149,7 +149,7 @@ Ruta: /reports
 
           <!-- Tip column -->
           <template #[`item.tip_amount`]="{ item }">
-            <div v-if="parseFloat(item.tip_amount) > 0" class="font-weight-medium">
+            <div v-if="item.tip_amount && parseFloat(item.tip_amount) > 0" class="font-weight-medium">
               ${{ parseFloat(item.tip_amount).toFixed(2) }}
             </div>
             <span v-else class="text-on-surface-variant">-</span>
@@ -429,7 +429,7 @@ const downloadCsv = () => {
         sale.staff?.name || '',                                             // Staff
         sale.loyalty_points_generated || 0,                                 // Puntos Lealtad
         ...paymentMethodsArray.map(m => paymentsByMethod[m] || ''),       // Métodos de pago dinámicos
-        parseFloat(sale.tip_amount).toFixed(2),                             // Propina
+        sale.tip_amount ? parseFloat(sale.tip_amount).toFixed(2) : '0.00', // Propina
         parseFloat(sale.total_amount).toFixed(2)                            // Total
       ]
     })
