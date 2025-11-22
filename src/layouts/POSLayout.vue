@@ -50,6 +50,13 @@ Emits: ninguno
         </v-tab>
         <v-tab
           v-if="isAdmin"
+          value="reports"
+          prepend-icon="mdi-file-chart"
+        >
+          Informe
+        </v-tab>
+        <v-tab
+          v-if="isAdmin"
           value="signals"
           prepend-icon="mdi-signal"
         >
@@ -133,6 +140,8 @@ watch(
       currentTab.value = 'products'
     } else if (newPath === '/tickets') {
       currentTab.value = 'tickets'
+    } else if (newPath === '/reports') {
+      currentTab.value = 'reports'
     } else if (newPath === '/signals') {
       currentTab.value = 'signals'
     }
@@ -148,6 +157,8 @@ watch(currentTab, (newTab) => {
     router.push('/productos')
   } else if (newTab === 'tickets' && route.path !== '/tickets') {
     router.push('/tickets')
+  } else if (newTab === 'reports' && route.path !== '/reports') {
+    router.push('/reports')
   } else if (newTab === 'signals' && route.path !== '/signals') {
     router.push('/signals')
   }

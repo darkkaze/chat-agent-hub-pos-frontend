@@ -25,7 +25,9 @@ import type {
   CreateSaleRequest,
   Sale,
   SalesListRequest,
-  SalesListResponse
+  SalesListResponse,
+  SalesReportRequest,
+  SalesReportResponse
 } from '@/types/pos'
 
 export class SalesService {
@@ -55,6 +57,14 @@ export class SalesService {
    */
   async getSale(saleId: string): Promise<Sale> {
     return apiService.get<Sale>(`/sales/${saleId}`)
+  }
+
+  /**
+   * Obtener reporte de ventas filtrado por fecha y staff
+   */
+  async getSalesReport(params: SalesReportRequest): Promise<SalesReportResponse> {
+    const queryParams = buildQueryParams(params)
+    return apiService.get<SalesReportResponse>(`/reports/sales/${queryParams}`)
   }
 }
 

@@ -3,6 +3,7 @@ import POSLayout from '@/layouts/POSLayout.vue'
 import POSPage from '@/views/POSPage.vue'
 import ProductsAdminView from '@/views/ProductsAdminView.vue'
 import SalesHistoryView from '@/views/SalesHistoryView.vue'
+import SalesReportView from '@/views/SalesReportView.vue'
 import SignalsAdminView from '@/views/SignalsAdminView.vue'
 import { useAuthStore } from '@/stores/auth'
 
@@ -42,6 +43,16 @@ const router = createRouter({
           component: SalesHistoryView,
           meta: {
             title: 'Historial de Ventas',
+            requiresAuth: true,
+            requiresAdmin: true // Only for ADMIN users
+          }
+        },
+        {
+          path: 'reports',
+          name: 'sales-report',
+          component: SalesReportView,
+          meta: {
+            title: 'Informe de Ventas',
             requiresAuth: true,
             requiresAdmin: true // Only for ADMIN users
           }

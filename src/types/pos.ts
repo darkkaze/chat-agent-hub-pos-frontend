@@ -166,6 +166,23 @@ export interface SalesListRequest {
   date?: string
 }
 
+export interface SalesReportRequest {
+  start_date: string      // ISO date: "2025-01-01"
+  end_date: string        // ISO date: "2025-01-31"
+  staff_id?: string       // Optional: specific staff id or "all"
+}
+
+export interface SalesReportResponse {
+  sales: Sale[]
+  total_amount: string    // Decimal as string
+  total_sales: number
+  filters: {
+    start_date: string
+    end_date: string
+    staff_id?: string | null
+  }
+}
+
 // Signal Types
 export interface Signal extends BaseEntity {
   name: string
